@@ -1,0 +1,2532 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finance CBM — Component Business Model</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+:root {
+  --c100:#161616;--c90:#262626;--c80:#393939;--c70:#525252;
+  --c60:#6f6f6f;--c50:#8d8d8d;--c40:#a8a8a8;--c30:#c6c6c6;
+  --c20:#e0e0e0;--c10:#f4f4f4;--white:#ffffff;
+  --blue70:#003a8c;--blue60:#0043ce;--blue50:#0f62fe;
+  --blue40:#4589ff;--blue30:#78a9ff;--blue20:#a6c8ff;--blue10:#edf5ff;
+  --teal70:#004144;--teal60:#005d5d;--teal50:#007d79;--teal40:#08bdba;--teal10:#d9fbfb;
+  --green60:#198038;--green50:#24a148;--green10:#defbe6;
+  --purple70:#491d8b;--purple60:#6929c4;--purple50:#8a3ffc;--purple40:#a56eff;--purple10:#f6f2ff;
+  --red60:#da1e28;--red10:#fff1f1;
+  --yellow50:#f1c21b;--orange50:#eb6200;
+  /* AI */
+  --ai-h:#cfe0ff;--ai-h-bd:var(--blue50);--ai-h-txt:var(--blue70);
+  --ai-m:#9ef0f0;--ai-m-bd:var(--teal50);--ai-m-txt:var(--teal70);
+  --ai-l:var(--c20);--ai-l-bd:var(--c50);--ai-l-txt:var(--c70);
+  /* Bands */
+  --s-col:var(--blue60);--s-bg:#e8f1ff;--s-lbl:#c0d8ff;
+  --t-col:var(--purple60);--t-bg:#ede9fe;--t-lbl:#d9d3fa;
+  --o-col:var(--green60);--o-bg:#e4f8eb;--o-lbl:#c4edcf;
+  --font:'IBM Plex Sans',system-ui,sans-serif;
+  --mono:'IBM Plex Mono',monospace;
+  --r:2px;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html{font-size:13px}
+body{font-family:var(--font);background:#f0f2f5;color:var(--c100);height:100vh;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── HEADER ── */
+.app-hdr{background:var(--c100);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:50px;flex-shrink:0;border-bottom:3px solid var(--blue60)}
+.hdr-l{display:flex;align-items:center;gap:12px}
+.ibm-pill{font-family:var(--mono);font-size:12px;font-weight:600;letter-spacing:3px;color:var(--white);background:var(--blue60);padding:3px 10px;border-radius:2px}
+.hdr-div{width:1px;height:22px;background:var(--c70)}
+.hdr-title{color:var(--white);font-size:14px;font-weight:700}
+.hdr-sub{color:var(--c50);font-size:9px;margin-top:1px;letter-spacing:.3px}
+.hdr-r{display:flex;gap:7px;align-items:center}
+
+/* ── TAB BAR ── */
+.tab-bar{background:var(--c100);display:flex;align-items:flex-end;padding:0 20px;gap:0;border-bottom:2px solid var(--blue60);flex-shrink:0}
+.tab-btn{padding:9px 18px;border:none;background:transparent;color:var(--c50);font:600 11px/1 var(--font);cursor:pointer;border-radius:3px 3px 0 0;transition:all .15s;letter-spacing:.2px;border-top:2px solid transparent;border-left:1px solid transparent;border-right:1px solid transparent;margin-bottom:-2px;white-space:nowrap}
+.tab-btn:hover{color:var(--c30);background:var(--c90)}
+.tab-btn.active{background:var(--white);color:var(--c100);border-top-color:var(--blue60);border-left-color:var(--c30);border-right-color:var(--c30)}
+.tab-badge{display:inline-block;background:var(--blue60);color:white;border-radius:8px;padding:1px 6px;font-size:9px;font-weight:700;margin-left:5px;letter-spacing:.3px}
+
+/* ── TOOLBAR ── */
+.toolbar{height:42px;background:var(--white);border-bottom:1px solid var(--c20);display:flex;align-items:center;padding:0 16px;gap:14px;flex-shrink:0;overflow-x:auto}
+.tg{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.tsep{width:1px;height:18px;background:var(--c20);flex-shrink:0}
+.tlbl{font-size:9px;font-weight:700;color:var(--c50);letter-spacing:1px;text-transform:uppercase;white-space:nowrap}
+.chip{padding:3px 10px;border-radius:10px;border:1px solid var(--c20);font:600 10px/1 var(--font);cursor:pointer;background:var(--white);color:var(--c60);transition:all .12s;white-space:nowrap}
+.chip:hover{border-color:var(--c50);color:var(--c100)}
+.chip.on-all{background:var(--c100);color:var(--white);border-color:var(--c100)}
+.chip.on-h{background:var(--blue60);color:var(--white);border-color:var(--blue60)}
+.chip.on-m{background:var(--teal50);color:var(--white);border-color:var(--teal50)}
+.chip.on-l{background:var(--c60);color:var(--white);border-color:var(--c60)}
+.chip.on-grp{background:var(--c100);color:var(--white);border-color:var(--c100)}
+.tselect{padding:4px 8px;border:1px solid var(--c20);border-radius:var(--r);font:500 11px var(--font);color:var(--c100);background:var(--white);outline:none;cursor:pointer;max-width:190px}
+.tselect:focus{border-color:var(--blue60)}
+.tsearch{padding:4px 10px;border:1px solid var(--c20);border-radius:var(--r);font:500 11px var(--font);color:var(--c100);background:var(--white);outline:none;width:180px}
+.tsearch:focus{border-color:var(--blue60)}
+.leg{display:flex;align-items:center;gap:5px;font-size:10px;color:var(--c60);flex-shrink:0}
+.leg-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;border:1px solid transparent;border-radius:var(--r);font:600 11px/1 var(--font);cursor:pointer;transition:all .12s;white-space:nowrap}
+.btn-primary{background:var(--blue60);color:var(--white);border-color:var(--blue60)}
+.btn-primary:hover{background:var(--blue50)}
+.btn-ghost{background:transparent;color:var(--c30);border-color:var(--c70)}
+.btn-ghost:hover{background:var(--c90);color:var(--white)}
+.btn-outline{background:transparent;color:var(--c70);border-color:var(--c30)}
+.btn-outline:hover{background:var(--c10);color:var(--c100)}
+.btn-danger{background:transparent;color:var(--red60);border-color:var(--red60)}
+.btn-danger:hover{background:var(--red10)}
+.btn-xs{padding:2px 7px;font-size:10px}
+.btn-sm{padding:5px 12px;font-size:11px}
+
+/* ── PANELS ── */
+.app-body{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.panel{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+/* ── STATUS BAR ── */
+.statusbar{height:26px;background:var(--white);border-top:1px solid var(--c20);display:flex;align-items:center;padding:0 16px;gap:20px;font-size:10px;color:var(--c60);flex-shrink:0}
+.sb-s strong{color:var(--c100);font-weight:700}
+.sb-s.h{color:var(--blue60)}.sb-s.m{color:var(--teal50)}
+
+/* ═══════════════════════════════════════
+   CBM TAB
+═══════════════════════════════════════ */
+.cbm-scroll{flex:1;overflow:auto;padding:16px}
+.cbm-wrap{display:inline-block;min-width:100%;border:1px solid var(--c20);border-radius:3px;overflow:hidden;background:var(--white);box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.cbm-table{display:grid}
+
+.corner{background:var(--c100);border-right:2px solid var(--c80);border-bottom:2px solid var(--c80);padding:10px;display:flex;flex-direction:column;justify-content:flex-end;position:sticky;left:0;z-index:10;min-width:42px}
+.corner-lbl{font:700 8px/1.2 var(--mono);color:var(--c50);letter-spacing:1.5px;text-transform:uppercase}
+
+.fn-hdr{background:var(--c100);border-right:1px solid var(--c80);border-bottom:2px solid var(--c80);padding:10px 10px 8px;display:flex;flex-direction:column;gap:4px;min-width:155px;cursor:default}
+.fn-hdr:hover .fn-actions{opacity:1}
+.fn-hdr-name{font-size:11px;font-weight:700;color:var(--white);line-height:1.25;cursor:pointer}
+.fn-hdr-name:hover{color:var(--blue30)}
+.fn-hdr-fte{font:700 17px/1 var(--mono);color:var(--blue40);margin-top:2px}
+.fn-hdr-lbl{font-size:8px;color:var(--c60);letter-spacing:.5px;text-transform:uppercase}
+.fn-badge{display:inline-block;padding:2px 6px;border-radius:8px;font:700 8px/1.4 var(--font);letter-spacing:.4px;text-transform:uppercase;margin-top:2px}
+.bco{background:rgba(69,137,255,.25);color:var(--blue30)}.bbf{background:rgba(36,161,72,.2);color:#86efac}.bgss{background:rgba(165,110,255,.2);color:var(--purple40)}
+.fn-bar{height:3px;border-radius:2px;display:flex;gap:1px;overflow:hidden;margin-top:4px}
+.bar-s{background:var(--blue40)}.bar-t{background:var(--purple40)}.bar-o{background:var(--green50)}
+.fn-pcts{display:flex;gap:5px;margin-top:2px}
+.fn-pct{font:700 8px/1 var(--mono)}
+.fn-pct.s{color:var(--blue40)}.fn-pct.t{color:var(--purple40)}.fn-pct.o{color:#86efac}
+.fn-actions{opacity:0;transition:opacity .15s;display:flex;gap:3px;margin-top:4px}
+
+.fn-hdr-add{background:var(--c90);border-right:1px solid var(--c80);border-bottom:2px solid var(--c80);padding:10px;display:flex;align-items:center;justify-content:center;min-width:80px}
+
+.band-lbl{position:sticky;left:0;z-index:8;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:8px 4px;border-right:2px solid;min-width:42px;gap:6px}
+.band-lbl.s{background:var(--s-lbl);border-right-color:var(--s-col)}
+.band-lbl.t{background:var(--t-lbl);border-right-color:var(--t-col)}
+.band-lbl.o{background:var(--o-lbl);border-right-color:var(--o-col)}
+.band-txt{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font:700 10px/1 var(--font);letter-spacing:1.5px;text-transform:uppercase;white-space:nowrap}
+.band-lbl.s .band-txt{color:var(--s-col)}.band-lbl.t .band-txt{color:var(--t-col)}.band-lbl.o .band-txt{color:var(--o-col)}
+.band-desc{writing-mode:vertical-rl;text-orientation:mixed;transform:rotate(180deg);font-size:8px;color:var(--c60);white-space:nowrap;line-height:1}
+
+.cbm-cell{border-right:1px solid var(--c20);border-bottom:1px solid var(--c20);padding:6px;min-width:155px;min-height:90px;display:flex;flex-direction:column;gap:4px;vertical-align:top}
+.cbm-cell.s{background:var(--s-bg)}.cbm-cell.t{background:var(--t-bg)}.cbm-cell.o{background:var(--o-bg)}
+.cbm-cell:hover .add-comp-btn{opacity:1}
+.add-fn-cell{background:var(--c10);border-right:1px dashed var(--c30);border-bottom:1px dashed var(--c30);display:flex;align-items:center;justify-content:center;min-width:80px;min-height:90px}
+
+.add-comp-btn{opacity:0;transition:opacity .15s;border:1px dashed var(--c30);border-radius:var(--r);padding:4px 6px;font:600 9px var(--font);color:var(--c60);cursor:pointer;background:transparent;margin-top:2px;display:flex;align-items:center;gap:3px}
+.add-comp-btn:hover,.add-comp-btn:focus{border-color:var(--blue60);color:var(--blue60);background:var(--blue10);opacity:1}
+
+/* COMPONENT CARD */
+.comp{border-radius:var(--r);border:1px solid;padding:5px 7px;cursor:default;position:relative;transition:transform .12s,box-shadow .12s,opacity .15s}
+.comp:hover{transform:translateY(-1px);box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.comp.h{background:var(--ai-h);border-color:var(--ai-h-bd)}
+.comp.m{background:var(--ai-m);border-color:var(--ai-m-bd)}
+.comp.l{background:var(--ai-l);border-color:var(--ai-l-bd)}
+.comp.dim{opacity:.2;pointer-events:none}
+.comp-top{display:flex;align-items:flex-start;gap:4px;margin-bottom:3px}
+.comp-dot{width:5px;height:5px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.comp.h .comp-dot{background:var(--blue60)}.comp.m .comp-dot{background:var(--teal50)}.comp.l .comp-dot{background:var(--c50)}
+.comp-name{font-size:10px;font-weight:700;line-height:1.3;flex:1}
+.comp.h .comp-name{color:var(--blue70)}.comp.m .comp-name{color:var(--teal70)}.comp.l .comp-name{color:var(--c70)}
+.comp-foot{display:flex;align-items:flex-end;justify-content:space-between;margin-top:2px}
+.comp-pct{font:700 12px/1 var(--mono);letter-spacing:-.5px}
+.comp.h .comp-pct{color:var(--blue60)}.comp.m .comp-pct{color:var(--teal50)}.comp.l .comp-pct{color:var(--c50)}
+.comp-pct-lbl{font-size:7px;color:var(--c60);text-transform:uppercase;letter-spacing:.3px}
+/* UC link badges on card */
+.comp-uc-links{display:flex;flex-wrap:wrap;gap:2px;margin-top:3px}
+.comp-uc-tag{font:600 8px/1 var(--mono);padding:1px 4px;border-radius:2px;cursor:pointer;letter-spacing:.3px;border:1px solid}
+.comp-uc-tag.h{background:var(--blue60);color:white;border-color:var(--blue60)}
+.comp-uc-tag.m{background:var(--teal50);color:white;border-color:var(--teal50)}
+.comp-uc-tag.l{background:var(--c60);color:white;border-color:var(--c60)}
+.comp-actions{position:absolute;top:3px;right:3px;display:none;gap:2px}
+.comp:hover .comp-actions{display:flex}
+.ca{width:16px;height:16px;border:none;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:8px;cursor:pointer;background:rgba(255,255,255,.9);line-height:1}
+.ca-e{color:var(--c80)}.ca-e:hover{background:var(--c20)}.ca-d{color:var(--red60)}.ca-d:hover{background:var(--red10)}
+
+/* ═══════════════════════════════════════
+   USE CASE LIBRARY TAB
+═══════════════════════════════════════ */
+.uc-scroll{flex:1;overflow:auto;padding:14px;background:#f0f2f5}
+.uc-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(330px,1fr));gap:10px}
+.uc-card{background:var(--white);border:1px solid var(--c20);border-radius:3px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.05);transition:box-shadow .15s,transform .15s;border-left:4px solid transparent}
+.uc-card.h{border-left-color:var(--blue60)}.uc-card.m{border-left-color:var(--teal50)}.uc-card.l{border-left-color:var(--c40)}
+.uc-card:hover{box-shadow:0 4px 16px rgba(0,0,0,.1);transform:translateY(-1px)}
+.uc-hd{padding:9px 12px 8px;display:flex;align-items:flex-start;gap:10px;cursor:pointer;border-bottom:1px solid var(--c10)}
+.uc-badge{font:700 9px/1 var(--mono);padding:2px 6px;border-radius:2px;flex-shrink:0;letter-spacing:.5px;text-transform:uppercase}
+.uc-badge.h{background:var(--ai-h);color:var(--blue70)}.uc-badge.m{background:var(--ai-m);color:var(--teal70)}.uc-badge.l{background:var(--ai-l);color:var(--c70)}
+.uc-title-block{flex:1}
+.uc-name{font:700 11px/1.3 var(--font);color:var(--c100)}
+.uc-sub{font-size:10px;color:var(--c60);margin-top:2px}
+.uc-sub strong{color:var(--c80);font-weight:600}
+.uc-score-wrap{text-align:right;flex-shrink:0}
+.uc-wscore{font:700 16px/1 var(--mono)}
+.uc-wscore.h{color:var(--blue60)}.uc-wscore.m{color:var(--teal50)}.uc-wscore.l{color:var(--c60)}
+.uc-wlbl{font-size:8px;color:var(--c50);text-transform:uppercase;letter-spacing:.4px}
+.uc-rank{font:600 9px var(--mono);color:var(--c60);margin-top:2px}
+.uc-action-tag{display:inline-block;padding:2px 6px;border-radius:8px;font:700 9px var(--font);margin-top:3px;letter-spacing:.3px}
+.act-now{background:#dcfce7;color:var(--green60)}.act-next{background:#fef9c3;color:#92400e}.act-later{background:var(--c10);color:var(--c60)}
+
+.uc-body{padding:9px 12px 10px}
+.uc-desc{font-size:10.5px;color:var(--c70);line-height:1.55;margin-bottom:8px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.uc-card.expanded .uc-desc{-webkit-line-clamp:unset}
+
+/* 6-dimension score bars */
+.dim-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;margin-bottom:8px}
+.dim-row{display:flex;align-items:center;gap:5px}
+.dim-lbl{font-size:9px;font-weight:700;color:var(--c60);letter-spacing:.3px;width:28px;flex-shrink:0;text-transform:uppercase}
+.dim-bar-wrap{flex:1;height:5px;background:var(--c20);border-radius:3px;overflow:hidden}
+.dim-bar{height:100%;border-radius:3px;transition:width .3s}
+.dim-val{font:700 10px/1 var(--mono);color:var(--c80);width:14px;text-align:right;flex-shrink:0}
+
+.uc-metrics{display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-bottom:8px}
+.uc-metric{background:var(--c10);border-radius:2px;padding:4px 7px}
+.uc-metric-k{font-size:8px;font-weight:700;color:var(--c60);text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px}
+.uc-metric-v{font-size:10px;font-weight:700;color:var(--c100)}
+.uc-metric-v.h{color:var(--blue60)}.uc-metric-v.m{color:var(--teal50)}
+
+/* CBM links in UC card */
+.uc-cbm-links{margin-bottom:8px}
+.uc-cbm-lbl{font-size:9px;font-weight:700;color:var(--c60);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.uc-cbm-chips{display:flex;flex-wrap:wrap;gap:3px}
+.uc-cbm-chip{padding:2px 7px;border-radius:8px;font:600 9px var(--font);border:1px solid var(--c20);background:var(--c10);color:var(--c70);cursor:pointer;transition:all .12s}
+.uc-cbm-chip:hover{background:var(--blue10);border-color:var(--blue40);color:var(--blue60)}
+.uc-cbm-chip.linked{background:var(--blue10);border-color:var(--blue40);color:var(--blue60)}
+.uc-cbm-add{padding:2px 7px;border-radius:8px;font:600 9px var(--font);border:1px dashed var(--c30);background:transparent;color:var(--c50);cursor:pointer}
+.uc-cbm-add:hover{border-color:var(--blue60);color:var(--blue60);background:var(--blue10)}
+
+/* expanded detail */
+.uc-detail{display:none;border-top:1px solid var(--c20);padding:9px 12px;background:var(--c10)}
+.uc-card.expanded .uc-detail{display:block}
+.uc-dl{font-size:9px;font-weight:700;color:var(--c60);text-transform:uppercase;letter-spacing:.7px;margin-bottom:3px;margin-top:8px}
+.uc-dl:first-child{margin-top:0}
+.uc-dv{font-size:10.5px;color:var(--c80);line-height:1.5}
+.uc-steps{padding-left:14px}
+.uc-steps li{font-size:10.5px;color:var(--c80);line-height:1.6;margin-bottom:1px}
+.uc-empty{grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--c60);font-size:13px}
+
+/* ═══════════════════════════════════════
+   SCORING / PRIORITISATION TAB
+═══════════════════════════════════════ */
+.sc-wrap{flex:1;overflow:auto;padding:14px;background:#f0f2f5}
+.sc-top{display:grid;grid-template-columns:1fr 340px;gap:12px;margin-bottom:12px}
+.sc-summary{background:var(--white);border:1px solid var(--c20);border-radius:3px;padding:14px 16px}
+.sc-summary-title{font:700 12px var(--font);color:var(--c100);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--c20)}
+.sc-kpi-row{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:10px}
+.sc-kpi{background:var(--c10);border-radius:3px;padding:8px 12px;flex:1;min-width:80px}
+.sc-kpi-v{font:700 20px/1 var(--mono)}
+.sc-kpi-v.h{color:var(--blue60)}.sc-kpi-v.m{color:var(--teal50)}.sc-kpi-v.warn{color:var(--orange50)}
+.sc-kpi-l{font-size:9px;color:var(--c60);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.sc-deploy-list{display:flex;flex-direction:column;gap:4px}
+.sc-deploy-item{display:flex;align-items:center;gap:8px;padding:5px 8px;border-radius:2px;background:var(--c10);font-size:11px}
+.sc-deploy-rank{font:700 11px var(--mono);color:var(--c60);width:24px;text-align:right;flex-shrink:0}
+
+.sc-weights{background:var(--white);border:1px solid var(--c20);border-radius:3px;padding:14px 16px}
+.sc-weights-title{font:700 12px var(--font);color:var(--c100);margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--c20)}
+.wt-row{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.wt-lbl{font-size:11px;font-weight:600;color:var(--c80);width:160px;flex-shrink:0}
+.wt-inp{width:60px;padding:4px 8px;border:1px solid var(--c20);border-radius:var(--r);font:700 12px var(--mono);color:var(--c100);text-align:center;outline:none}
+.wt-inp:focus{border-color:var(--blue60)}
+.wt-bar-wrap{flex:1;height:6px;background:var(--c20);border-radius:3px;overflow:hidden}
+.wt-bar{height:100%;border-radius:3px;background:var(--blue50);transition:width .2s}
+.wt-total{font:700 12px var(--mono);margin-top:6px;padding:6px 8px;border-radius:var(--r);text-align:center}
+.wt-total.ok{background:var(--green10);color:var(--green60)}.wt-total.err{background:var(--red10);color:var(--red60)}
+
+.sc-table-wrap{background:var(--white);border:1px solid var(--c20);border-radius:3px;overflow:hidden}
+.sc-table{width:100%;border-collapse:collapse}
+.sc-table th{background:var(--c100);color:var(--c30);font:700 10px/1.4 var(--font);padding:8px 10px;text-align:left;letter-spacing:.4px;text-transform:uppercase;white-space:nowrap;border-right:1px solid var(--c80)}
+.sc-table th:last-child{border-right:none}
+.sc-table td{padding:6px 10px;border-bottom:1px solid var(--c10);font-size:11px;vertical-align:middle;border-right:1px solid var(--c10)}
+.sc-table td:last-child{border-right:none}
+.sc-table tr:hover td{background:#f8faff}
+.sc-table tr.deploy-now td{background:#f0fdf4}
+.sc-table tr.next-wave td{background:#fefce8}
+.sc-num{font-family:var(--mono);font-weight:700}
+.sc-rank-badge{display:inline-block;width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font:700 10px var(--mono)}
+.rank-top{background:var(--blue60);color:white}
+.rank-mid{background:var(--teal50);color:white}
+.rank-low{background:var(--c40);color:white}
+.sc-dim-cell{display:flex;align-items:center;gap:4px}
+.sc-dim-dot{width:14px;height:14px;border-radius:2px;display:flex;align-items:center;justify-content:center;font:700 9px var(--mono);flex-shrink:0}
+.d1{background:#dbeafe;color:var(--blue70)}.d2{background:#dcfce7;color:var(--green60)}.d3{background:#ede9fe;color:var(--purple60)}.d4{background:#fef9c3;color:#92400e}.d5{background:#ffedd5;color:var(--orange50)}.d6{background:#fee2e2;color:var(--red60)}
+.sc-action{display:inline-block;padding:2px 8px;border-radius:8px;font:700 9px var(--font);letter-spacing:.3px}
+.sc-a-now{background:#dcfce7;color:var(--green60)}.sc-a-next{background:#fef9c3;color:#92400e}.sc-a-later{background:var(--c10);color:var(--c60)}
+
+/* ── MODAL ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:3000;align-items:center;justify-content:center}
+.overlay.on{display:flex}
+.modal{background:var(--white);border-radius:3px;width:500px;max-width:96vw;max-height:92vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.3)}
+.modal-hd{background:var(--c100);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:3px solid var(--blue60);position:sticky;top:0;z-index:1}
+.modal-ttl{color:var(--white);font-size:13px;font-weight:700}
+.modal-x{background:none;border:none;color:var(--c50);font-size:20px;cursor:pointer;padding:0;line-height:1;width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:2px}
+.modal-x:hover{color:var(--white);background:var(--c80)}
+.modal-body{padding:16px}
+.modal-ft{padding:12px 18px;border-top:1px solid var(--c20);display:flex;gap:8px;justify-content:flex-end;background:var(--c10)}
+.fg{margin-bottom:13px}.fg:last-child{margin-bottom:0}
+.flbl{display:block;font-size:11px;font-weight:700;color:var(--c80);margin-bottom:4px}
+.flbl-hint{font-weight:400;color:var(--c60);font-size:10px}
+.finp,.fsel,.ftxt{width:100%;padding:7px 10px;border:1px solid var(--c30);border-radius:var(--r);font:13px var(--font);color:var(--c100);background:var(--white);outline:none;transition:border-color .1s}
+.finp:focus,.fsel:focus,.ftxt:focus{border-color:var(--blue60);box-shadow:0 0 0 2px rgba(15,98,254,.15)}
+.finp[readonly]{background:var(--c10);color:var(--c60);cursor:default}
+.ftxt{min-height:70px;resize:vertical;line-height:1.5}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.ai-opts{display:flex;gap:8px}
+.ai-opt{flex:1;padding:8px 6px;border:2px solid var(--c20);border-radius:3px;text-align:center;cursor:pointer;font:700 11px var(--font);color:var(--c60);transition:all .15s;line-height:1.4}
+.ai-opt span{font:400 9px var(--font);display:block;margin-top:2px}
+.ai-opt.sel-h{border-color:var(--blue60);background:var(--ai-h);color:var(--blue70)}
+.ai-opt.sel-m{border-color:var(--teal50);background:var(--ai-m);color:var(--teal70)}
+.ai-opt.sel-l{border-color:var(--c50);background:var(--ai-l);color:var(--c70)}
+.pct-bar-wrap{height:5px;background:var(--c20);border-radius:3px;overflow:hidden;margin:5px 0 3px}
+.pct-bar{height:100%;border-radius:3px;transition:width .2s,background .2s;width:0}
+.valmsg{font-size:11px;padding:7px 11px;border-radius:var(--r);margin-top:8px;display:none}
+.valmsg.err{background:var(--red10);color:var(--red60);border-left:3px solid var(--red60)}
+.valmsg.ok{background:var(--green10);color:var(--green60);border-left:3px solid var(--green50)}
+.fhint{font-size:10px;color:var(--c60);margin-top:3px;line-height:1.4}
+
+/* CBM link picker inside modal */
+.link-picker{border:1px solid var(--c20);border-radius:var(--r);max-height:200px;overflow-y:auto;padding:8px}
+.link-picker-item{display:flex;align-items:center;gap:8px;padding:4px 6px;border-radius:2px;cursor:pointer;font-size:11px;color:var(--c80);transition:background .1s}
+.link-picker-item:hover{background:var(--blue10)}
+.link-picker-item input[type=checkbox]{accent-color:var(--blue60);cursor:pointer;flex-shrink:0}
+.link-picker-item.section-hdr{font:700 9px var(--font);color:var(--c50);letter-spacing:.8px;text-transform:uppercase;padding:6px 6px 2px;cursor:default;background:none}
+.link-picker-item.section-hdr:hover{background:none}
+
+/* TOOLTIP */
+.tt{display:none;position:fixed;background:var(--c90);color:var(--white);border-radius:3px;padding:11px 14px;font-size:11px;max-width:280px;z-index:9900;pointer-events:none;line-height:1.5;box-shadow:0 8px 32px rgba(0,0,0,.35)}
+.tt.on{display:block}
+.tt-title{font-weight:700;font-size:12px;margin-bottom:5px}
+.tt-row{display:flex;justify-content:space-between;gap:10px;margin-bottom:2px;font-size:10px}
+.tt-k{color:var(--c40)}.tt-v{font-weight:600}
+.tt-desc{font-size:10px;color:var(--c30);line-height:1.5;margin-top:6px;border-top:1px solid var(--c70);padding-top:6px}
+.tt-badge{display:inline-block;padding:2px 7px;border-radius:8px;font-size:9px;font-weight:700;margin-top:5px;letter-spacing:.3px;text-transform:uppercase}
+.tt-h{background:var(--blue60);color:white}.tt-m{background:var(--teal50);color:white}.tt-l{background:var(--c60);color:white}
+
+/* ── EDITABLE SCORE CELLS ── */
+.sc-dim-td{padding:3px 4px !important;vertical-align:middle}
+.sc-dim-wrap{display:flex;align-items:center;gap:4px;min-width:90px}
+.sc-dim-score{
+  width:22px;height:22px;border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  font:700 11px/1 var(--mono);flex-shrink:0;
+  border:1px solid transparent;
+}
+.sc-dim-dropdown{
+  flex:1;border:1px solid;border-radius:3px;
+  background:var(--white);overflow:hidden;
+  position:relative;min-width:0;
+}
+.sc-dim-sel{
+  width:100%;padding:3px 4px;
+  border:none;outline:none;
+  font:500 10px var(--font);color:var(--c80);
+  background:transparent;cursor:pointer;
+  position:relative;z-index:1;
+  -webkit-appearance:none;appearance:none;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.sc-dim-sel:hover{background:rgba(255,255,255,.9)}
+.sc-dim-sel:focus{background:var(--white);box-shadow:0 0 0 2px rgba(15,98,254,.2);}
+.sc-dim-bar{
+  position:absolute;bottom:0;left:0;height:3px;
+  border-radius:0 0 3px 3px;transition:width .25s;
+  z-index:0;
+}
+/* row highlight on hover to make editing clear */
+.sc-table tr:hover .sc-dim-sel{background:rgba(255,255,255,.95)}
+.sc-table tr.deploy-now{background:#f0fdf4 !important}
+.sc-table tr.next-wave{background:#fefce8 !important}
+
+
+/* ── Component UC Link List ── */
+.cul-wrap{margin-top:5px;border-top:1px solid rgba(0,0,0,.08);padding-top:4px}
+.cul-hdr{font:700 8px/1 var(--font);color:var(--c50);text-transform:uppercase;letter-spacing:.8px;margin-bottom:3px}
+.cul-row{display:flex;align-items:center;gap:4px;padding:2px 3px;border-radius:2px;cursor:pointer;transition:background .1s;margin-bottom:1px}
+.cul-row:hover{background:rgba(255,255,255,.7)}
+.cul-id{font:700 8px/1 var(--mono);padding:1px 4px;border-radius:2px;flex-shrink:0;letter-spacing:.3px}
+.cul-id.h{background:var(--blue60);color:white}
+.cul-id.m{background:var(--teal50);color:white}
+.cul-id.l{background:var(--c60);color:white}
+.cul-name{font:400 9px/1.2 var(--font);color:var(--c80);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cul-score{font:700 9px/1 var(--mono);flex-shrink:0;min-width:18px;text-align:right}
+
+
+/* ── UC card enhancements ── */
+.uc-badge-domain{font:500 9px var(--font);color:var(--c60);letter-spacing:.2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.uc-complexity-tag{display:inline-block;padding:2px 6px;border-radius:8px;font:700 9px var(--font);letter-spacing:.3px}
+.cx-Low{background:#dcfce7;color:var(--green60)}.cx-Medium{background:#fef9c3;color:#92400e}.cx-High{background:var(--red10);color:var(--red60)}
+.uc-metrics-row{display:grid;grid-template-columns:repeat(4,1fr);gap:4px;margin-bottom:8px}
+.uc-expand-hint{font-size:8px;color:var(--c50);text-align:center;margin-top:3px;letter-spacing:.3px}
+.uc-card.expanded .uc-expand-hint{content:'▲ collapse'}
+
+/* ── UC card detail (expanded) ── */
+.uc-detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:0;padding:10px 14px 14px}
+.udg-section{padding:8px 10px;border-bottom:1px solid var(--c20)}
+.udg-full{grid-column:1/-1}
+.udg-lbl{font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+.udg-val{font-size:11px;color:var(--c80);line-height:1.55}
+.udg-highlight{background:var(--blue10);border-left:3px solid var(--blue40);padding:6px 10px;border-radius:0 3px 3px 0;font-size:11px;color:var(--c80);line-height:1.5}
+.udg-steps{padding-left:20px;margin:0}
+.udg-steps li{font-size:11px;color:var(--c80);line-height:1.6;margin-bottom:3px;padding-left:4px}
+.udg-tags{display:flex;flex-wrap:wrap;gap:4px}
+.udg-tag{padding:2px 7px;border-radius:8px;font-size:9px;font-weight:600;background:var(--c10);color:var(--c70);border:1px solid var(--c20)}
+/* 6-dim scoring rows inside card */
+.udg-dim-row{display:grid;grid-template-columns:110px 80px 1fr 240px;align-items:center;gap:8px;padding:4px 0;border-bottom:1px solid var(--c10)}
+.udg-dim-row:last-child{border-bottom:none}
+.udg-dim-lbl{font:600 10px var(--font);color:var(--c80)}
+.udg-dim-bar-wrap{height:5px;background:var(--c20);border-radius:3px;overflow:hidden}
+.udg-dim-bar{height:100%;border-radius:3px;transition:width .3s}
+.udg-dim-score{font:700 10px var(--mono);text-align:center}
+.udg-dim-txt{font:400 10px var(--font);color:var(--c60);line-height:1.4}
+/* CBM chip improvements */
+.cbm-chip-fn{color:var(--c60);font-size:8px}.cbm-chip-arr{color:var(--blue60)}.cbm-chip-comp{color:var(--c100)}
+.cbm-chip-band{font:700 8px var(--mono);padding:1px 4px;border-radius:2px;margin-left:2px}
+.cbm-chip-band.s{background:var(--s-lbl);color:var(--s-col)}.cbm-chip-band.t{background:var(--t-lbl);color:var(--t-col)}.cbm-chip-band.o{background:var(--o-lbl);color:var(--o-col)}
+
+/* ── Scoring eye button ── */
+.sc-eye-btn{width:22px;height:22px;border:1px solid var(--c20);border-radius:3px;background:var(--white);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:12px;color:var(--c60);transition:all .12s;padding:0}
+.sc-eye-btn:hover{background:var(--blue10);border-color:var(--blue40);color:var(--blue60)}
+.sc-table td:first-child{padding:4px !important}
+
+/* ── UC Detail Modal ── */
+.ucm-body-wrap{padding:0}
+.ucm-metrics-bar{display:grid;grid-template-columns:repeat(6,1fr);border-bottom:2px solid var(--c20)}
+.ucm-metric{padding:12px 14px;border-right:1px solid var(--c10);text-align:center}
+.ucm-metric:last-child{border-right:none}
+.ucm-metric-v{font:700 14px/1 var(--mono);color:var(--c100);margin-bottom:3px}
+.ucm-metric-v.h{color:var(--blue60)}.ucm-metric-v.m{color:var(--teal50)}
+.ucm-metric-k{font:600 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.5px}
+.ucm-section{padding:12px 18px;border-bottom:1px solid var(--c10)}
+.ucm-section:last-child{border-bottom:none}
+.ucm-section-hdr{font:700 10px var(--font);color:var(--c70);text-transform:uppercase;letter-spacing:.8px;margin-bottom:7px}
+.ucm-body-txt{font:400 12px/1.6 var(--font);color:var(--c80)}
+.ucm-callout{background:var(--blue10);border-left:3px solid var(--blue40);padding:8px 12px;border-radius:0 3px 3px 0;font:400 11px/1.5 var(--font);color:var(--c80)}
+.ucm-two-col{display:grid;grid-template-columns:1fr 1fr}
+.ucm-two-col .ucm-section{border-right:1px solid var(--c10)}
+.ucm-two-col .ucm-section:last-child{border-right:none}
+.ucm-steps{padding-left:0;list-style:none;margin:0;display:flex;flex-direction:column;gap:4px}
+.ucm-steps li{display:flex;align-items:flex-start;gap:8px;font:400 11px/1.55 var(--font);color:var(--c80)}
+.ucm-step-num{flex-shrink:0;width:20px;height:20px;border-radius:50%;background:var(--blue60);color:white;font:700 9px/20px var(--mono);text-align:center;display:flex;align-items:center;justify-content:center}
+.ucm-tag-list{display:flex;flex-wrap:wrap;gap:5px}
+.ucm-tag{padding:3px 9px;border-radius:8px;font:500 10px var(--font);border:1px solid}
+.ucm-tag-ai{background:var(--blue10);color:var(--blue70);border-color:var(--blue30)}
+.ucm-tag-sys{background:var(--purple10);color:var(--purple60);border-color:var(--purple40)}
+.ucm-tag-cbm{background:var(--green10);color:var(--green60);border-color:var(--green50);cursor:pointer}
+.ucm-tag-cbm:hover{background:#bbf7d0}
+.ucm-dim-grid{display:flex;flex-direction:column;gap:4px}
+.ucm-dim-row{display:grid;grid-template-columns:130px 52px 1fr 280px;align-items:center;gap:10px;padding:5px 0;border-bottom:1px solid var(--c10)}
+.ucm-dim-row:last-child{border-bottom:none}
+.ucm-dim-lbl{font:600 11px var(--font);color:var(--c80)}
+.ucm-dim-pill{padding:3px 8px;border-radius:8px;font:700 10px var(--mono);text-align:center;flex-shrink:0}
+.ucm-dim-bar-wrap{height:6px;background:var(--c20);border-radius:3px;overflow:hidden}
+.ucm-dim-bar{height:100%;border-radius:3px;transition:width .3s}
+.ucm-dim-txt{font:400 10px/1.4 var(--font);color:var(--c60)}
+
+
+/* ════════════════════════════════════════
+   SIMULATION PANEL
+════════════════════════════════════════ */
+.sim-panel{
+  margin-top:16px;background:var(--white);
+  border:1px solid var(--c20);border-radius:3px;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+  overflow:hidden;
+}
+.sim-hdr{
+  background:var(--c100);padding:10px 18px;
+  display:flex;align-items:center;justify-content:space-between;
+  border-bottom:2px solid var(--blue60);gap:12px;flex-wrap:wrap;
+}
+.sim-hdr-left{display:flex;align-items:center;gap:9px}
+.sim-hdr-icon{font-size:14px;color:var(--blue40)}
+.sim-hdr-title{font:700 12px var(--font);color:var(--white);letter-spacing:.2px}
+.sim-hdr-sub{font:400 10px var(--font);color:var(--c50);letter-spacing:.2px}
+.sim-hdr-right{display:flex;align-items:center;gap:7px;flex-shrink:0}
+.sim-lbl{font:700 9px var(--font);color:var(--c50);text-transform:uppercase;letter-spacing:.8px}
+.sim-chip{
+  padding:3px 11px;border-radius:10px;border:1px solid var(--c70);
+  font:600 10px var(--font);cursor:pointer;background:transparent;color:var(--c40);
+  transition:all .12s;white-space:nowrap;
+}
+.sim-chip:hover{border-color:var(--c30);color:var(--white)}
+.sim-chip.active{background:var(--blue60);color:var(--white);border-color:var(--blue60)}
+
+.sim-section-lbl{
+  font:700 9px var(--font);color:var(--c60);text-transform:uppercase;
+  letter-spacing:.9px;padding:10px 18px 5px;border-top:1px solid var(--c10);
+  background:var(--c10);
+}
+.sim-section-lbl:first-of-type{border-top:none}
+
+/* ── A: FTE table ── */
+.sim-table-wrap{overflow-x:auto;padding:0 18px 12px}
+.sim-table{width:100%;border-collapse:collapse;min-width:600px}
+.sim-table th{
+  font:700 9px var(--font);color:var(--c60);text-transform:uppercase;
+  letter-spacing:.5px;padding:6px 10px;text-align:right;
+  border-bottom:2px solid var(--c20);white-space:nowrap;
+}
+.sim-table th:first-child{text-align:left;color:var(--c100);width:180px}
+.sim-table th.th-s{color:var(--s-col)}.sim-table th.th-t{color:var(--t-col)}.sim-table th.th-o{color:var(--o-col)}
+.sim-table th.th-total{color:var(--c80);border-left:1px solid var(--c20)}
+.sim-table th.th-addr{color:var(--blue60);border-left:1px solid var(--c20)}
+.sim-table td{
+  padding:5px 10px;text-align:right;font-size:11px;
+  border-bottom:1px solid var(--c10);color:var(--c80);
+}
+.sim-table td:first-child{text-align:left;font-weight:600;color:var(--c100)}
+.sim-table td.td-s{color:var(--s-col);font-weight:600}
+.sim-table td.td-t{color:var(--t-col);font-weight:600}
+.sim-table td.td-o{color:var(--o-col);font-weight:600}
+.sim-table td.td-total{font:700 12px var(--mono);color:var(--c100);border-left:1px solid var(--c20)}
+.sim-table td.td-addr{font:700 12px var(--mono);color:var(--blue60);border-left:1px solid var(--c20)}
+.sim-table tr.sim-subtotal td{background:var(--c10);font-weight:700}
+.sim-table tr.sim-grand td{background:var(--c100);color:var(--white);font:700 12px var(--mono)}
+.sim-table tr.sim-grand td:first-child{color:var(--white)}
+.sim-table tr.sim-grand td.td-s{color:var(--blue30)}
+.sim-table tr.sim-grand td.td-t{color:#c4b5fd}
+.sim-table tr.sim-grand td.td-o{color:#86efac}
+.sim-table tr.sim-grand td.td-total{color:var(--yellow50);border-left:1px solid var(--c70)}
+.sim-table tr.sim-grand td.td-addr{color:var(--blue30);border-left:1px solid var(--c70)}
+.sim-table td.td-pct{font-size:10px;color:var(--c50)}
+
+/* ── B: Addressable KPIs ── */
+.sim-kpi-row{display:flex;gap:1px;padding:0 18px 12px;flex-wrap:wrap;gap:10px}
+.sim-kpi{
+  background:var(--c10);border:1px solid var(--c20);border-radius:3px;
+  padding:10px 16px;flex:1;min-width:140px;position:relative;overflow:hidden;
+}
+.sim-kpi::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
+.sim-kpi.kpi-s::before{background:var(--s-col)}
+.sim-kpi.kpi-t::before{background:var(--t-col)}
+.sim-kpi.kpi-o::before{background:var(--o-col)}
+.sim-kpi.kpi-addr::before{background:var(--blue60)}
+.sim-kpi.kpi-total::before{background:var(--c60)}
+.sim-kpi-v{font:700 22px/1 var(--mono);margin-bottom:3px}
+.kpi-s .sim-kpi-v{color:var(--s-col)}
+.kpi-t .sim-kpi-v{color:var(--t-col)}
+.kpi-o .sim-kpi-v{color:var(--o-col)}
+.kpi-addr .sim-kpi-v{color:var(--blue60)}
+.kpi-total .sim-kpi-v{color:var(--c80)}
+.sim-kpi-lbl{font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.7px}
+.sim-kpi-sub{font:400 10px var(--font);color:var(--c50);margin-top:2px}
+.sim-kpi-bar{height:3px;background:var(--c20);border-radius:2px;margin-top:8px;overflow:hidden}
+.sim-kpi-bar-fill{height:100%;border-radius:2px}
+
+/* ── C: AI Savings ── */
+.sim-savings-row{display:flex;gap:10px;padding:0 18px 14px;flex-wrap:wrap}
+.sim-saving{
+  flex:1;min-width:160px;background:var(--white);
+  border:1px solid var(--c20);border-radius:3px;padding:10px 14px;
+  border-top:3px solid transparent;position:relative;
+}
+.sim-saving.sv-s{border-top-color:var(--s-col)}
+.sim-saving.sv-t{border-top-color:var(--t-col)}
+.sim-saving.sv-o{border-top-color:var(--o-col)}
+.sim-saving.sv-total{border-top-color:var(--blue60);background:var(--blue10)}
+.sim-saving-pool{font:400 10px var(--font);color:var(--c60);margin-bottom:4px}
+.sim-saving-v{font:700 20px/1 var(--mono);margin-bottom:2px}
+.sv-s .sim-saving-v{color:var(--s-col)}
+.sv-t .sim-saving-v{color:var(--t-col)}
+.sv-o .sim-saving-v{color:var(--o-col)}
+.sv-total .sim-saving-v{color:var(--blue60)}
+.sim-saving-lbl{font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.6px}
+.sim-saving-range{font:400 10px var(--font);color:var(--c60);margin-top:3px}
+.sim-saving-pct{
+  display:inline-block;padding:2px 7px;border-radius:8px;
+  font:700 9px var(--font);margin-top:5px;letter-spacing:.3px;
+}
+.sv-s .sim-saving-pct{background:var(--s-lbl);color:var(--s-col)}
+.sv-t .sim-saving-pct{background:var(--t-lbl);color:var(--t-col)}
+.sv-o .sim-saving-pct{background:var(--o-lbl);color:var(--o-col)}
+.sv-total .sim-saving-pct{background:var(--blue10);color:var(--blue60)}
+
+.sim-footnote{
+  font:400 10px var(--font);color:var(--c50);
+  padding:8px 18px;border-top:1px solid var(--c10);
+  background:var(--c10);line-height:1.6;
+}
+
+
+/* ── Sim panel sliders ── */
+.sim-slider-group{display:flex;flex-direction:column;gap:5px}
+.sim-slider-row{display:flex;align-items:center;gap:8px}
+.sim-slider-lbl{font:700 9px var(--font);letter-spacing:.5px;text-transform:uppercase;width:72px;text-align:right;flex-shrink:0}
+.sim-slider{
+  -webkit-appearance:none;appearance:none;
+  width:130px;height:4px;border-radius:2px;outline:none;cursor:pointer;
+  background:var(--c70);flex-shrink:0;
+}
+.sim-slider::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:14px;height:14px;border-radius:50%;
+  background:var(--white);border:2px solid var(--blue40);cursor:pointer;
+  transition:border-color .12s;
+}
+.sim-slider::-webkit-slider-thumb:hover{border-color:var(--blue50);transform:scale(1.15)}
+.sim-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;background:var(--white);border:2px solid var(--blue40);cursor:pointer;}
+.sim-slider-val{font:700 11px var(--mono);color:var(--white);min-width:30px;text-align:left}
+
+
+/* ── Component budget pill on function header ── */
+.fn-bgt-pill{
+  font:700 9px/1 var(--mono);padding:2px 7px;border-radius:8px;
+  flex-shrink:0;letter-spacing:.3px;white-space:nowrap;
+}
+.bgt-ok{background:#dcfce7;color:var(--green60)}
+.bgt-over{background:var(--red10);color:var(--red60)}
+.bgt-under{background:#fef9c3;color:#92400e}
+/* hint line in modal — allow multiline */
+.fhint{white-space:pre-line;line-height:1.6}
+
+
+/* ── Component simulation table ── */
+.sim-filter-bar{
+  display:flex;align-items:center;gap:10px;padding:8px 18px;
+  background:var(--c10);border-bottom:1px solid var(--c20);flex-wrap:wrap;
+}
+.sim-comp-row td{padding:5px 8px;border-bottom:1px solid var(--c10);vertical-align:middle;font-size:11px}
+.sim-comp-row:hover td{background:#f8faff}
+.sim-fn-cell{
+  font:700 11px var(--font);color:var(--c100);
+  border-right:2px solid var(--c20);vertical-align:top !important;
+  padding-top:8px !important;background:var(--c10) !important;
+  max-width:160px;
+}
+.sim-fn-fte{font:400 9px var(--mono);color:var(--c50);margin-top:2px}
+.sim-band-cell{
+  font:700 9px var(--font);text-transform:uppercase;letter-spacing:.5px;
+  text-align:center;padding:4px 6px;
+}
+.td-s.sim-band-cell{background:var(--s-lbl);color:var(--s-col)}
+.td-t.sim-band-cell{background:var(--t-lbl);color:var(--t-col)}
+.td-o.sim-band-cell{background:var(--o-lbl);color:var(--o-col)}
+.sim-comp-name{font:500 11px var(--font);color:var(--c90)}
+.sim-fte-cell{font:700 11px var(--mono);color:var(--c80);text-align:right}
+.sim-uc-cell{padding:3px 6px !important}
+.sim-uc-chip{
+  font:700 8px var(--mono);padding:1px 4px;border-radius:2px;
+  display:inline-block;margin:1px;letter-spacing:.3px;
+}
+.sim-uc-chip.h{background:var(--blue60);color:white}
+.sim-uc-chip.m{background:var(--teal50);color:white}
+.sim-uc-chip.l{background:var(--c50);color:white}
+/* saving % input cell */
+.sim-pct-cell{padding:4px 6px !important;min-width:110px}
+.sim-pct-wrap{display:flex;flex-direction:column;gap:2px}
+.sim-pct-input-row{display:flex;align-items:center;gap:4px}
+.sim-pct-inp{
+  width:54px;padding:3px 6px;border:1px solid var(--c20);border-radius:var(--r);
+  font:700 12px var(--mono);color:var(--c100);text-align:right;
+  background:var(--white);outline:none;
+  transition:border-color .1s;
+}
+.sim-pct-inp:focus{border-color:var(--blue60);box-shadow:0 0 0 2px rgba(15,98,254,.15)}
+.sim-pct-inp:hover{border-color:var(--c50)}
+.sim-pct-unit{font:700 11px var(--font);color:var(--c60)}
+.sim-pct-bar-wrap{height:3px;background:var(--c20);border-radius:2px;overflow:hidden;width:100%}
+.sim-pct-bar{height:100%;border-radius:2px;transition:width .2s}
+.sim-pct-bar.s{background:var(--s-col)}
+.sim-pct-bar.t{background:var(--t-col)}
+.sim-pct-bar.o{background:var(--o-col)}
+/* saving FTE cell */
+.sim-save-cell{font:700 12px var(--mono);text-align:right;color:var(--blue60)}
+/* subtotal row */
+.sim-fn-subtotal td{
+  padding:5px 8px;background:var(--c10);
+  border-top:1px solid var(--c20);border-bottom:2px solid var(--c20);
+  font-size:11px;
+}
+.sim-fn-subtotal .td-addr{color:var(--blue60);font-size:13px}
+/* table head */
+.sim-comp-table th{padding:6px 8px !important;font-size:9px}
+
+
+/* ── Linked UC cards inside component modal ── */
+.linked-uc-card{
+  border:1px solid var(--c20);border-radius:3px;
+  padding:10px 12px;margin-bottom:7px;
+  border-left:4px solid transparent;
+  background:var(--white);
+  transition:box-shadow .12s;
+}
+.linked-uc-card:last-child{margin-bottom:0}
+.linked-uc-card:hover{box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.linked-uc-card.h{border-left-color:var(--blue60);background:var(--blue10)}
+.linked-uc-card.m{border-left-color:var(--teal50);background:var(--teal10)}
+.linked-uc-card.l{border-left-color:var(--c40);background:var(--c10)}
+
+.luc-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:6px}
+.luc-left{flex:1}
+.luc-badges{display:flex;align-items:center;gap:5px;margin-bottom:4px}
+.luc-name{font:700 12px/1.3 var(--font);color:var(--c100);margin-bottom:2px}
+.luc-sub{font:400 10px var(--font);color:var(--c60)}
+.luc-right{text-align:right;flex-shrink:0}
+.luc-score{font:700 18px/1 var(--mono)}
+.luc-score.h{color:var(--blue60)}.luc-score.m{color:var(--teal50)}.luc-score.l{color:var(--c60)}
+.luc-score-lbl{font:600 8px var(--font);color:var(--c50);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+
+.luc-metrics{
+  display:grid;grid-template-columns:repeat(4,1fr);gap:4px;
+  margin-bottom:6px;
+}
+.luc-metric{background:rgba(255,255,255,.7);border-radius:2px;padding:3px 6px}
+.luc-mk{display:block;font:700 8px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.4px;margin-bottom:1px}
+.luc-mv{font:700 10px var(--font);color:var(--c90)}
+.luc-mv.h{color:var(--blue60)}.luc-mv.m{color:var(--teal50)}
+
+.luc-desc{font:400 10px/1.5 var(--font);color:var(--c70)}
+
+/* widen the modal for better card layout */
+#cm-ov .modal{width:560px}
+
+
+/* ── Component card FTE block ── */
+.comp-fte-block{display:flex;flex-direction:column;gap:2px;margin-top:2px}
+.comp-fte-row{display:flex;align-items:baseline;gap:3px}
+.comp-fte-sep{font-size:9px;color:var(--c50)}
+.comp-fte-val{font:700 13px/1 var(--mono);letter-spacing:-.3px}
+.comp.h .comp-fte-val{color:var(--blue60)}
+.comp.m .comp-fte-val{color:var(--teal50)}
+.comp.l .comp-fte-val{color:var(--c60)}
+.comp-save-row{display:flex;align-items:baseline;gap:3px}
+.comp-save-lbl{font-size:8px;color:var(--c50);text-transform:uppercase;letter-spacing:.3px}
+.comp-save-val{font:700 10px/1 var(--mono);color:var(--green60)}
+.comp-save-pct{font-size:8px;color:var(--c50)}
+
+
+/* ── Mapping tab split % inputs ── */
+.split-pct-inp{
+  width:54px;padding:3px 6px;border:1px solid var(--c20);border-radius:var(--r);
+  font:700 12px var(--mono);color:var(--c100);text-align:right;background:var(--white);
+  outline:none;transition:border-color .1s;
+}
+.split-pct-inp:focus{border-color:var(--blue60);box-shadow:0 0 0 2px rgba(15,98,254,.15)}
+.split-pct-inp:hover{border-color:var(--c50)}
+
+</style>
+</head>
+<body>
+<div class="tt" id="tt"></div>
+
+<header class="app-hdr">
+  <div class="hdr-l">
+    <span class="ibm-pill">IBM CBM</span>
+    <div class="hdr-div"></div>
+    <div>
+      <div class="hdr-title">Finance Component Business Model</div>
+      <div class="hdr-sub">Baseline &nbsp;|&nbsp; 1,696.7 FTE &middot; $198mm</div>
+    </div>
+  </div>
+  <div class="hdr-r">
+    <button class="btn btn-ghost btn-sm" onclick="doExport()">&#8595; Export</button>
+    <button class="btn btn-ghost btn-sm" onclick="doImport()">&#8593; Import</button>
+    <button class="btn btn-primary btn-sm" onclick="openFnModal(null)">+ Add Function</button>
+  </div>
+</header>
+
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-cbm" onclick="switchTab('cbm')">Component Business Model</button>
+  <button class="tab-btn" id="tab-map" onclick="switchTab('map')">Taxonomy Mapping</button>
+</div>
+
+<div id="tb-cbm" class="toolbar">
+  <div class="tg"><span class="tlbl">AI Potential</span>
+    <button class="chip on-all" id="f-all" onclick="setAIF('all')">All</button>
+    <button class="chip" id="f-h" onclick="setAIF('h')">&#9679; High</button>
+    <button class="chip" id="f-m" onclick="setAIF('m')">&#9679; Medium</button>
+    <button class="chip" id="f-l" onclick="setAIF('l')">&#9679; Low</button>
+  </div>
+  <div class="tsep"></div>
+  <div class="tg"><span class="tlbl">Group</span>
+    <button class="chip on-grp" id="g-all" onclick="setGrpF('all')">All</button>
+    <button class="chip" id="g-CO" onclick="setGrpF('CO')">CO / Corp</button>
+    <button class="chip" id="g-BF" onclick="setGrpF('BF')">Business Facing</button>
+    <button class="chip" id="g-GSS" onclick="setGrpF('GSS')">GSS</button>
+  </div>
+  <div class="tsep"></div>
+  <div class="tg">
+    <div class="leg"><div class="leg-dot" style="background:var(--blue60)"></div>High AI (&#8805;85)</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--teal50)"></div>Medium (70&#8211;84)</div>
+    <div class="leg"><div class="leg-dot" style="background:var(--c40)"></div>Low (&lt;70)</div>
+  </div>
+</div>
+
+<div class="app-body">
+
+  <div id="panel-cbm" class="panel">
+    <div class="cbm-scroll">
+      <div class="cbm-wrap"><div class="cbm-table" id="cbm-grid"></div></div>
+      <!-- ── SIMULATION PANEL ── -->
+    <div class="sim-panel" id="sim-panel">
+
+      <!-- Header -->
+      <div class="sim-hdr">
+        <div class="sim-hdr-left">
+          <span class="sim-hdr-icon">&#9636;</span>
+          <span class="sim-hdr-title">FTE Simulation — Component-Level AI Savings</span>
+          <span class="sim-hdr-sub">Edit saving % per component &middot; defaults derived from linked AI use case effort reduction &middot; updates live</span>
+        </div>
+        <div class="sim-hdr-right">
+          <button class="sim-chip" id="sim-reset-btn" onclick="resetSavingPcts()" style="font-size:10px">&#8635; Reset to UC defaults</button>
+        </div>
+      </div>
+
+      <!-- Filters -->
+      <div class="sim-filter-bar">
+        <span class="tlbl">Function</span>
+        <select class="tselect" id="sim-fn-filter" onchange="renderSimulation()" style="max-width:200px"><option value="">All Functions</option></select>
+        <div class="tsep"></div>
+        <span class="tlbl">Band</span>
+        <button class="chip on-all" id="simb-all" onclick="setSimBand('all')">All</button>
+        <button class="chip" id="simb-s" onclick="setSimBand('s')">Strategic</button>
+        <button class="chip" id="simb-t" onclick="setSimBand('t')">Governance</button>
+        <button class="chip" id="simb-o" onclick="setSimBand('o')">Operational</button>
+        <div class="tsep"></div>
+        <span style="font-size:10px;color:var(--c60);margin-left:auto" id="sim-total-lbl"></span>
+      </div>
+
+      <!-- Component simulation table -->
+      <div class="sim-table-wrap">
+        <table class="sim-table" id="sim-comp-table">
+          <thead>
+            <tr>
+              <th style="text-align:left;width:160px">Function</th>
+              <th style="width:80px">Band</th>
+              <th style="text-align:left">Component</th>
+              <th style="width:90px">Comp FTE</th>
+              <th style="width:120px">Linked Use Cases</th>
+              <th style="width:110px">Saving %<br><span style="font-weight:400;font-size:8px;color:var(--c40)">(edit to adjust)</span></th>
+              <th style="width:110px" class="th-addr">FTE Saving</th>
+            </tr>
+          </thead>
+          <tbody id="sim-comp-body"></tbody>
+          <tfoot id="sim-comp-foot"></tfoot>
+        </table>
+      </div>
+
+      <div class="sim-footnote" id="sim-footnote"></div>
+    </div>
+
+    </div>
+    <div class="statusbar" id="cbm-sb">&#8212;</div>
+  </div>
+
+  <!-- MAPPING PANEL -->
+  <div id="panel-map" class="panel" style="display:none">
+    <div style="flex:1;overflow:auto;padding:16px;background:#f0f2f5">
+      <div style="max-width:1200px;margin:0 auto;display:flex;flex-direction:column;gap:16px">
+
+        <!-- TABLE 1: Vertical crosswalk (old → new, simple) -->
+        <div style="background:var(--white);border:1px solid var(--c20);border-radius:3px;overflow:hidden">
+          <div style="background:var(--c100);padding:12px 18px;border-bottom:3px solid var(--blue60);display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="color:var(--white);font:700 12px var(--font)">Vertical Mapping — Client Taxonomy → IBM Taxonomy</div>
+              <div style="color:var(--c50);font-size:10px;margin-top:2px">How your 16 existing functions map to the 10 IBM Finance verticals, with FTE allocation shown</div>
+            </div>
+          </div>
+          <table style="width:100%;border-collapse:collapse" id="map-vertical-table">
+            <thead>
+              <tr style="background:var(--c10)">
+                <th style="padding:9px 14px;text-align:left;font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.7px;border-bottom:2px solid var(--c20);width:22%">Client Taxonomy</th>
+                <th style="padding:9px 10px;text-align:right;font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.7px;border-bottom:2px solid var(--c20);width:70px">Client FTE</th>
+                <th style="padding:9px 10px;text-align:center;border-bottom:2px solid var(--c20);width:30px"></th>
+                <th style="padding:9px 14px;text-align:left;font:700 9px var(--font);color:var(--blue60);text-transform:uppercase;letter-spacing:.7px;border-bottom:2px solid var(--c20)">IBM Taxonomy Vertical</th>
+                <th style="padding:9px 10px;text-align:center;font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.7px;border-bottom:2px solid var(--c20);width:100px">Split % <span style="font-weight:400;text-transform:none">(editable)</span></th>
+                <th style="padding:9px 10px;text-align:right;font:700 9px var(--font);color:var(--blue60);text-transform:uppercase;letter-spacing:.7px;border-bottom:2px solid var(--c20);width:80px">IBM FTE</th>
+                <th style="padding:9px 10px;text-align:center;font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.7px;border-bottom:2px solid var(--c20);width:70px">Total %</th>
+                <th style="padding:9px 14px;text-align:left;font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.7px;border-bottom:2px solid var(--c20)">Basis / Note</th>
+              </tr>
+            </thead>
+            <tbody id="map-vertical-body"></tbody>
+          </table>
+        </div>
+
+        <!-- TABLE 2: Component detail — our name | client name (editable) | description (editable) -->
+        <div style="background:var(--white);border:1px solid var(--c20);border-radius:3px;overflow:hidden">
+          <div style="background:var(--c100);padding:12px 18px;border-bottom:3px solid var(--blue60);display:flex;align-items:center;justify-content:space-between">
+            <div>
+              <div style="color:var(--white);font:700 12px var(--font)">Component Register — IBM Taxonomy vs Client Taxonomy</div>
+              <div style="color:var(--c50);font-size:10px;margin-top:2px">IBM component names shown &middot; add your client taxonomy name alongside &middot; descriptions pre-filled and editable</div>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center">
+              <select class="tselect" id="map-fn-filter" onchange="renderMappingTab()" style="background:var(--c90);border-color:var(--c70);color:var(--c30);font-size:10px">
+                <option value="">All Verticals</option>
+              </select>
+              <select class="tselect" id="map-band-filter" onchange="renderMappingTab()" style="background:var(--c90);border-color:var(--c70);color:var(--c30);font-size:10px">
+                <option value="">All Bands</option>
+                <option value="s">Strategic</option>
+                <option value="t">Governance</option>
+                <option value="o">Operational</option>
+              </select>
+            </div>
+          </div>
+          <div style="overflow-x:auto">
+            <table style="width:100%;border-collapse:collapse">
+              <thead>
+                <tr style="background:var(--c10)">
+                  <th style="padding:8px 14px;text-align:left;font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--c20);width:160px">Vertical</th>
+                  <th style="padding:8px 14px;text-align:center;font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--c20);width:90px">Band</th>
+                  <th style="padding:8px 14px;text-align:left;font:700 9px var(--font);color:var(--blue60);text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--c20);width:220px">IBM Taxonomy Component</th>
+                  <th style="padding:8px 14px;text-align:left;font:700 9px var(--font);color:var(--green60);text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--c20);width:220px">Client Taxonomy <span style="font-weight:400;text-transform:none;letter-spacing:0">(your name)</span></th>
+                  <th style="padding:8px 14px;text-align:left;font:700 9px var(--font);color:var(--c60);text-transform:uppercase;letter-spacing:.6px;border-bottom:2px solid var(--c20)">Description <span style="font-weight:400;color:var(--c50)">(add description)</span></th>
+                </tr>
+              </thead>
+              <tbody id="map-comp-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div style="font-size:10px;color:var(--c50);padding:4px 2px;line-height:1.6">
+          <strong>FTE Methodology:</strong> Client baseline FTEs (1,696.7 total) are fully preserved and allocated to IBM verticals using a best-fit mapping. Functions that span multiple IBM verticals are split proportionally by work type. S/G/O% splits are derived from APQC-weighted averages of contributing old functions. Component names follow the IBM Finance taxonomy. The Client Taxonomy column is for you to record your own naming equivalent.
+        </div>
+      </div>
+    </div>
+    <div class="statusbar" id="map-sb">Taxonomy Mapping &nbsp;|&nbsp; 10 verticals &nbsp;·&nbsp; 108 components &nbsp;·&nbsp; CO / BF / GSS groupings</div>
+  </div>
+
+
+</div>
+
+<!-- COMPONENT MODAL -->
+<div class="overlay" id="cm-ov">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-ttl" id="cm-title">Add Component</span><button class="modal-x" onclick="closeModal('cm-ov')">&#215;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="cm-fid"><input type="hidden" id="cm-band"><input type="hidden" id="cm-cid">
+      <div class="fg"><label class="flbl">Component Name</label><input class="finp" id="cm-name" type="text" placeholder="e.g. Journal Entry Processing"></div>
+      <div class="fg"><label class="flbl">FTE % of Function Total <span class="flbl-hint">(all components across S+G+O should sum to 100%)</span></label>
+        <input class="finp" id="cm-pct" type="number" min="1" placeholder="e.g. 25" oninput="updPctHint()">
+        <div class="pct-bar-wrap"><div class="pct-bar" id="pct-bar"></div></div>
+        <div class="fhint" id="cm-hint">&#8212;</div>
+      </div>
+      <div class="fg"><label class="flbl">AI Potential</label>
+        <div class="ai-opts">
+          <div class="ai-opt" id="ao-h" onclick="selAI('h')">High<span>Score &#8805;85</span></div>
+          <div class="ai-opt" id="ao-m" onclick="selAI('m')">Medium<span>70&#8211;84</span></div>
+          <div class="ai-opt" id="ao-l" onclick="selAI('l')">Low<span>&lt;70</span></div>
+        </div>
+      </div>
+      <div class="fg"><label class="flbl">AI Use Case Description <span class="flbl-hint">(tooltip)</span></label>
+        <textarea class="ftxt" id="cm-uc" placeholder="Describe AI use case, FTE/cost savings&#8230;"></textarea>
+      </div>
+      <!-- Currently linked — shown prominently -->
+      <div class="fg" id="cm-linked-section">
+        <label class="flbl">Linked Use Cases
+          <span class="flbl-hint" id="cm-linked-count"></span>
+        </label>
+        <div id="cm-linked-cards"></div>
+      </div>
+
+      <!-- Full picker to add / remove -->
+      <div class="fg">
+        <label class="flbl">Add / Remove Use Cases <span class="flbl-hint">(check to link, uncheck to remove)</span></label>
+        <div class="link-picker" id="cm-links"></div>
+      </div>
+      <div class="valmsg" id="cm-val"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('cm-ov')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveComp()">Save Component</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- FUNCTION MODAL -->
+<div class="overlay" id="fm-ov">
+  <div class="modal">
+    <div class="modal-hd"><span class="modal-ttl" id="fm-title">Add Function</span><button class="modal-x" onclick="closeModal('fm-ov')">&#215;</button></div>
+    <div class="modal-body">
+      <input type="hidden" id="fm-fid">
+      <div class="fg"><label class="flbl">Function Name</label><input class="finp" id="fm-name" type="text" placeholder="e.g. Record to Report"></div>
+      <div class="two-col">
+        <div class="fg"><label class="flbl">Total FTE</label><input class="finp" id="fm-fte" type="number" min="0.1" step="0.1" placeholder="270"></div>
+        <div class="fg"><label class="flbl">Group</label>
+          <select class="fsel" id="fm-grp">
+            <option value="CO">CO / Corporate Finance</option>
+            <option value="BF">Business Facing Finance</option>
+            <option value="GSS">GSS &#8211; Finance Operations</option>
+          </select>
+        </div>
+      </div>
+      <div class="fg"><label class="flbl">Role-Type Split <span class="flbl-hint">(Ops = 100&#8211;S&#8211;T)</span></label>
+        <div class="three-col">
+          <div><label class="flbl" style="color:var(--s-col);font-size:10px">Strategic %</label><input class="finp" id="fm-s" type="number" min="0" max="100" step="0.1" oninput="syncO()"></div>
+          <div><label class="flbl" style="color:var(--t-col);font-size:10px">Governance %</label><input class="finp" id="fm-t" type="number" min="0" max="100" step="0.1" oninput="syncO()"></div>
+          <div><label class="flbl" style="color:var(--o-col);font-size:10px">Operational %</label><input class="finp" id="fm-o" type="number" readonly></div>
+        </div>
+      </div>
+      <div class="valmsg" id="fm-val"></div>
+    </div>
+    <div class="modal-ft">
+      <button class="btn btn-outline" onclick="closeModal('fm-ov')">Cancel</button>
+      <button class="btn btn-primary" onclick="saveFn()">Save Function</button>
+    </div>
+  </div>
+</div>
+
+<!-- UC DETAIL MODAL -->
+<div class="overlay" id="uc-modal-ov">
+  <div class="modal" style="width:700px;max-width:97vw">
+    <div class="modal-hd">
+      <div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="uc-badge" id="ucm-badge" style="font-size:10px"></span>
+          <span class="modal-ttl" id="ucm-title" style="font-size:14px"></span>
+        </div>
+        <div id="ucm-sub" style="color:var(--c50);font-size:10px;margin-top:2px"></div>
+      </div>
+      <button class="modal-x" onclick="closeModal('uc-modal-ov')">&#215;</button>
+    </div>
+    <div class="modal-body" id="ucm-body" style="padding:0"></div>
+  </div>
+</div>
+
+
+<input type="file" id="imp-file" accept=".json" style="display:none" onchange="handleImport(event)">
+
+<script>
+'use strict';
+const SEED = [
+  {id:'fn1',name:"Financial Planning, Budgeting & Forecasting",fte:54.6,grp:"CO",s:15.1,t:46.7,o:38.2,comps:{s:[{id:'c001',name:"Capital Planning",pct:4,ai:'l',uc_desc:'',uc_links:["UC-041", "UC-069"]},
+         {id:'c002',name:"Strategic Planning & Target Setting",pct:4,ai:'l',uc_desc:'',uc_links:["UC-047", "UC-145"]},
+         {id:'c003',name:"Operational Planning",pct:4,ai:'l',uc_desc:'',uc_links:["UC-045", "UC-036"]},
+         {id:'c004',name:"Budget Procedures & Guidelines",pct:3,ai:'l',uc_desc:'',uc_links:["UC-044", "UC-149"]}],t:[{id:'c005',name:"Budget Plan Approval",pct:16,ai:'m',uc_desc:'',uc_links:["UC-044", "UC-045"]},
+         {id:'c006',name:"Budget Policy Monitoring",pct:16,ai:'m',uc_desc:'',uc_links:["UC-081", "UC-082"]},
+         {id:'c007',name:"Budget Forecast Model Design",pct:15,ai:'m',uc_desc:'',uc_links:["UC-038", "UC-145"]}],o:[{id:'c008',name:"Forecast Preparation",pct:19,ai:'h',uc_desc:'',uc_links:["UC-036", "UC-037"]},
+         {id:'c009',name:"Budget Preparation",pct:19,ai:'h',uc_desc:'',uc_links:["UC-039", "UC-044"]}]}},
+  {id:'fn2',name:"Financial Operations",fte:568.5,grp:"GSS",s:3.3,t:14.7,o:82.0,comps:{s:[{id:'c010',name:"Financial Procedures & Business Rules",pct:3,ai:'l',uc_desc:'',uc_links:["UC-081", "UC-149"]}],t:[{id:'c011',name:"Authority & Limits Delegation",pct:7,ai:'m',uc_desc:'',uc_links:["UC-078", "UC-081"]},
+         {id:'c012',name:"Operational Reconciliation",pct:8,ai:'m',uc_desc:'',uc_links:["UC-026", "UC-051"]}],o:[{id:'c013',name:"Payroll Accounting",pct:12,ai:'h',uc_desc:'',uc_links:["UC-116", "UC-118"]},
+         {id:'c014',name:"Accounts Receivable Processing",pct:12,ai:'h',uc_desc:'',uc_links:["UC-015", "UC-016"]},
+         {id:'c015',name:"Dispute & Deduction Accounting",pct:12,ai:'h',uc_desc:'',uc_links:["UC-017", "UC-018"]},
+         {id:'c016',name:"Travel & Expense Processing",pct:12,ai:'h',uc_desc:'',uc_links:["UC-084", "UC-089"]},
+         {id:'c017',name:"Fixed Assets Accounting",pct:12,ai:'h',uc_desc:'',uc_links:["UC-066", "UC-070"]},
+         {id:'c018',name:"Project Accounting",pct:12,ai:'m',uc_desc:'',uc_links:["UC-069", "UC-071"]},
+         {id:'c019',name:"Accounts Payable Processing",pct:10,ai:'h',uc_desc:'',uc_links:["UC-001", "UC-004"]}]}},
+  {id:'fn3',name:"Accounting Close & Consolidation",fte:61.5,grp:"GSS",s:8.3,t:25.5,o:66.2,comps:{s:[{id:'c020',name:"Accounting Policies & Procedures",pct:8,ai:'l',uc_desc:'',uc_links:["UC-081", "UC-029"]}],t:[{id:'c021',name:"Financial Reconciliation",pct:8,ai:'m',uc_desc:'',uc_links:["UC-026", "UC-072"]},
+         {id:'c022',name:"Journal Entry Review & Approval",pct:8,ai:'m',uc_desc:'',uc_links:["UC-025", "UC-031"]},
+         {id:'c023',name:"Close Coordination & Scheduling",pct:10,ai:'m',uc_desc:'',uc_links:["UC-024", "UC-031"]}],o:[{id:'c024',name:"Intra-Company Transfer Pricing",pct:13,ai:'h',uc_desc:'',uc_links:["UC-073", "UC-058"]},
+         {id:'c025',name:"Pre-close Execution",pct:13,ai:'h',uc_desc:'',uc_links:["UC-024", "UC-025"]},
+         {id:'c026',name:"Tax Accounting",pct:13,ai:'h',uc_desc:'',uc_links:["UC-030", "UC-057"]},
+         {id:'c027',name:"Close Performance Monitoring",pct:13,ai:'h',uc_desc:'',uc_links:["UC-024", "UC-111"]},
+         {id:'c028',name:"Accounting Consolidation",pct:14,ai:'h',uc_desc:'',uc_links:["UC-027", "UC-072"]}]}},
+  {id:'fn4',name:"Business Performance Management",fte:227.1,grp:"BF",s:21.0,t:47.1,o:31.9,comps:{s:[{id:'c029',name:"Management Reporting Procedures & Rules",pct:7,ai:'l',uc_desc:'',uc_links:["UC-081", "UC-039"]},
+         {id:'c030',name:"Management Reporting Framework",pct:7,ai:'l',uc_desc:'',uc_links:["UC-039", "UC-043"]},
+         {id:'c031',name:"Key Performance Indicator Definition",pct:7,ai:'l',uc_desc:'',uc_links:["UC-046", "UC-138"]}],t:[{id:'c032',name:"Performance-based Incentive Integration",pct:16,ai:'l',uc_desc:'',uc_links:["UC-119", "UC-096"]},
+         {id:'c033',name:"Performance Review & Impact Assessment",pct:16,ai:'m',uc_desc:'',uc_links:["UC-037", "UC-145"]},
+         {id:'c034',name:"Key Performance Indicator Monitoring",pct:15,ai:'m',uc_desc:'',uc_links:["UC-039", "UC-147"]}],o:[{id:'c035',name:"Business Analysis & Modeling",pct:6,ai:'h',uc_desc:'',uc_links:["UC-038", "UC-145"]},
+         {id:'c036',name:"Cost Accounting Management",pct:6,ai:'h',uc_desc:'',uc_links:["UC-100", "UC-103"]},
+         {id:'c037',name:"Management Reporting",pct:6,ai:'h',uc_desc:'',uc_links:["UC-039", "UC-043"]},
+         {id:'c038',name:"Performance Dashboards Creation",pct:6,ai:'h',uc_desc:'',uc_links:["UC-039", "UC-146"]},
+         {id:'c039',name:"Business Case Preparation",pct:8,ai:'h',uc_desc:'',uc_links:["UC-145", "UC-041"]}]}},
+  {id:'fn5',name:"External Financial Reporting",fte:28.2,grp:"CO",s:8.5,t:23.9,o:67.6,comps:{s:[{id:'c040',name:"Investor Relations Management",pct:4,ai:'l',uc_desc:'',uc_links:["UC-134", "UC-135"]},
+         {id:'c041',name:"Financial Disclosure Requirement Definition",pct:4,ai:'l',uc_desc:'',uc_links:["UC-059", "UC-137"]}],t:[{id:'c042',name:"Internal Audit Management",pct:8,ai:'m',uc_desc:'',uc_links:["UC-079", "UC-060"]},
+         {id:'c043',name:"Financial Statements Approval",pct:8,ai:'m',uc_desc:'',uc_links:["UC-029", "UC-059"]},
+         {id:'c044',name:"Reporting Compliance Monitoring",pct:8,ai:'m',uc_desc:'',uc_links:["UC-082", "UC-060"]}],o:[{id:'c045',name:"Regulatory Inquiries Handling",pct:14,ai:'h',uc_desc:'',uc_links:["UC-059", "UC-082"]},
+         {id:'c046',name:"Investor Relations Support",pct:14,ai:'h',uc_desc:'',uc_links:["UC-134", "UC-138"]},
+         {id:'c047',name:"Board Reporting Preparation",pct:14,ai:'h',uc_desc:'',uc_links:["UC-043", "UC-137"]},
+         {id:'c048',name:"Financial Statements Preparation",pct:14,ai:'h',uc_desc:'',uc_links:["UC-029", "UC-035"]},
+         {id:'c049',name:"Regulatory Reporting Production",pct:12,ai:'h',uc_desc:'',uc_links:["UC-059", "UC-091"]}]}},
+  {id:'fn6',name:"Risk & Compliance Management",fte:62.8,grp:"CO",s:13.5,t:55.7,o:30.8,comps:{s:[{id:'c050',name:"Enterprise Risk Framework",pct:7,ai:'l',uc_desc:'',uc_links:["UC-082", "UC-139"]},
+         {id:'c051',name:"Internal Controls Framework",pct:7,ai:'l',uc_desc:'',uc_links:["UC-060", "UC-077"]}],t:[{id:'c052',name:"Controls Monitoring",pct:19,ai:'m',uc_desc:'',uc_links:["UC-077", "UC-078"]},
+         {id:'c053',name:"Risk & Compliance Monitoring",pct:19,ai:'m',uc_desc:'',uc_links:["UC-082", "UC-083"]},
+         {id:'c054',name:"Fraud Management",pct:18,ai:'m',uc_desc:'',uc_links:["UC-080", "UC-089"]}],o:[{id:'c055',name:"Risk Scoring and Evaluation",pct:10,ai:'h',uc_desc:'',uc_links:["UC-083", "UC-139"]},
+         {id:'c056',name:"Risk Reporting",pct:10,ai:'h',uc_desc:'',uc_links:["UC-059", "UC-082"]},
+         {id:'c057',name:"Compliance & Controls Reporting",pct:11,ai:'h',uc_desc:'',uc_links:["UC-060", "UC-091"]}]}},
+  {id:'fn7',name:"Treasury & Investments",fte:62.1,grp:"CO",s:14.1,t:32.6,o:53.3,comps:{s:[{id:'c058',name:"Treasury Procedures & Rules",pct:5,ai:'l',uc_desc:'',uc_links:["UC-052", "UC-054"]},
+         {id:'c059',name:"Investment Procedures & Rules",pct:5,ai:'l',uc_desc:'',uc_links:["UC-041", "UC-163"]},
+         {id:'c060',name:"Liquidity Planning",pct:4,ai:'l',uc_desc:'',uc_links:["UC-049", "UC-169"]}],t:[{id:'c061',name:"Currency Exposure Management",pct:11,ai:'m',uc_desc:'',uc_links:["UC-050", "UC-171"]},
+         {id:'c062',name:"Investment Portfolio Performance Monitoring",pct:11,ai:'m',uc_desc:'',uc_links:["UC-052", "UC-054"]},
+         {id:'c063',name:"Bank Account Reconciliation",pct:11,ai:'m',uc_desc:'',uc_links:["UC-051", "UC-026"]}],o:[{id:'c064',name:"Investment Portfolio Planning",pct:6,ai:'h',uc_desc:'',uc_links:["UC-041", "UC-163"]},
+         {id:'c065',name:"Cash Management Operations",pct:6,ai:'h',uc_desc:'',uc_links:["UC-048", "UC-051"]},
+         {id:'c066',name:"Equity & Debt Management",pct:6,ai:'h',uc_desc:'',uc_links:["UC-052", "UC-132"]},
+         {id:'c067',name:"Investment Portfolio Management",pct:6,ai:'h',uc_desc:'',uc_links:["UC-041", "UC-054"]},
+         {id:'c068',name:"Cash Forecasting",pct:6,ai:'h',uc_desc:'',uc_links:["UC-049", "UC-169"]},
+         {id:'c069',name:"Trading & Settlement",pct:6,ai:'h',uc_desc:'',uc_links:["UC-048", "UC-053"]},
+         {id:'c070',name:"Investment Modeling",pct:6,ai:'h',uc_desc:'',uc_links:["UC-145", "UC-163"]},
+         {id:'c071',name:"Capital Acquisition & Securitization",pct:6,ai:'h',uc_desc:'',uc_links:["UC-052", "UC-132"]},
+         {id:'c072',name:"Currency Transactions Execution",pct:5,ai:'h',uc_desc:'',uc_links:["UC-050", "UC-056"]}]}},
+  {id:'fn8',name:"Tax Management",fte:120.2,grp:"CO",s:11.2,t:33.0,o:55.8,comps:{s:[{id:'c073',name:"Tax Strategies & Planning",pct:6,ai:'l',uc_desc:'',uc_links:["UC-058", "UC-152"]},
+         {id:'c074',name:"Tax Compliance Policies & Procedures",pct:5,ai:'l',uc_desc:'',uc_links:["UC-081", "UC-082"]}],t:[{id:'c075',name:"Tax Compliance Monitoring",pct:33,ai:'m',uc_desc:'',uc_links:["UC-060", "UC-062"]}],o:[{id:'c076',name:"Tax Return Preparation",pct:14,ai:'h',uc_desc:'',uc_links:["UC-057", "UC-061"]},
+         {id:'c077',name:"Transaction-based Tax Advice",pct:14,ai:'h',uc_desc:'',uc_links:["UC-057", "UC-064"]},
+         {id:'c078',name:"Tax Research",pct:14,ai:'h',uc_desc:'',uc_links:["UC-062", "UC-063"]},
+         {id:'c079',name:"Tax Inquiries Handling",pct:14,ai:'h',uc_desc:'',uc_links:["UC-109", "UC-062"]}]}},
+  {id:'fn9',name:"Specialty Services",fte:253.5,grp:"BF",s:21.8,t:47.3,o:30.9,comps:{s:[{id:'c080',name:"Internal Audit Objectives & Planning",pct:5,ai:'l',uc_desc:'',uc_links:["UC-079", "UC-149"]},
+         {id:'c081',name:"M&A Strategy",pct:5,ai:'l',uc_desc:'',uc_links:["UC-126", "UC-145"]},
+         {id:'c082',name:"Financial Strategy & Governance",pct:5,ai:'l',uc_desc:'',uc_links:["UC-047", "UC-149"]},
+         {id:'c083',name:"External Audit Requirement Definition",pct:7,ai:'l',uc_desc:'',uc_links:["UC-079", "UC-082"]}],t:[{id:'c084',name:"Audit Recommendations Monitoring",pct:9,ai:'m',uc_desc:'',uc_links:["UC-079", "UC-060"]},
+         {id:'c085',name:"M&A Synergy Monitoring",pct:9,ai:'m',uc_desc:'',uc_links:["UC-127", "UC-115"]},
+         {id:'c086',name:"M&A Board Approval",pct:9,ai:'m',uc_desc:'',uc_links:["UC-126", "UC-145"]},
+         {id:'c087',name:"Financial Policy Monitoring",pct:9,ai:'m',uc_desc:'',uc_links:["UC-081", "UC-082"]},
+         {id:'c088',name:"Service Provider Monitoring",pct:11,ai:'m',uc_desc:'',uc_links:["UC-010", "UC-083"]}],o:[{id:'c089',name:"M&A Candidate Identification",pct:5,ai:'h',uc_desc:'',uc_links:["UC-126", "UC-148"]},
+         {id:'c090',name:"Audit Findings Reporting",pct:5,ai:'h',uc_desc:'',uc_links:["UC-079", "UC-059"]},
+         {id:'c091',name:"M&A Deals Execution",pct:5,ai:'h',uc_desc:'',uc_links:["UC-127", "UC-128"]},
+         {id:'c092',name:"M&A Due Diligence",pct:5,ai:'h',uc_desc:'',uc_links:["UC-126", "UC-129"]},
+         {id:'c093',name:"Internal Audits Execution",pct:5,ai:'h',uc_desc:'',uc_links:["UC-079", "UC-060"]},
+         {id:'c094',name:"Special Projects & Internal Consulting",pct:6,ai:'h',uc_desc:'',uc_links:["UC-111", "UC-147"]}]}},
+  {id:'fn10',name:"Business Administration",fte:258.3,grp:"BF",s:20.3,t:45.7,o:34.0,comps:{s:[{id:'c095',name:"Financial Systems Architecture Planning",pct:4,ai:'l',uc_desc:'',uc_links:["UC-131", "UC-149"]},
+         {id:'c096',name:"Financial Policies & Procedures",pct:4,ai:'l',uc_desc:'',uc_links:["UC-081", "UC-149"]},
+         {id:'c097',name:"Finance Service Delivery Model",pct:4,ai:'l',uc_desc:'',uc_links:["UC-115", "UC-047"]},
+         {id:'c098',name:"Finance & Accounting Staff Planning",pct:4,ai:'l',uc_desc:'',uc_links:["UC-120", "UC-153"]},
+         {id:'c099',name:"Data Governance Strategy & Rules",pct:4,ai:'l',uc_desc:'',uc_links:["UC-150", "UC-149"]}],t:[{id:'c100',name:"Financial Systems Architecture Compliance",pct:9,ai:'m',uc_desc:'',uc_links:["UC-060", "UC-081"]},
+         {id:'c101',name:"Master Data Management",pct:9,ai:'m',uc_desc:'',uc_links:["UC-150", "UC-019"]},
+         {id:'c102',name:"Staff Performance & Reviews",pct:9,ai:'l',uc_desc:'',uc_links:["UC-117", "UC-153"]},
+         {id:'c103',name:"Financial Policy Monitoring",pct:9,ai:'m',uc_desc:'',uc_links:["UC-081", "UC-082"]},
+         {id:'c104',name:"Service Provider Monitoring",pct:10,ai:'m',uc_desc:'',uc_links:["UC-010", "UC-083"]}],o:[{id:'c105',name:"Financial Systems Maintenance",pct:8,ai:'h',uc_desc:'',uc_links:["UC-113", "UC-131"]},
+         {id:'c106',name:"Service Provider Management",pct:8,ai:'h',uc_desc:'',uc_links:["UC-010", "UC-003"]},
+         {id:'c107',name:"Master Data Maintenance",pct:8,ai:'h',uc_desc:'',uc_links:["UC-150", "UC-019"]},
+         {id:'c108',name:"Staff Development & Retention",pct:10,ai:'m',uc_desc:'',uc_links:["UC-114", "UC-153"]}]}},
+];
+
+const COMP_UC_MAP = {"c001": ["UC-029", "UC-043"], "c002": ["UC-039", "UC-043", "UC-138"], "c003": ["UC-027", "UC-072", "UC-075"], "c004": ["UC-037", "UC-039"], "c005": ["UC-024", "UC-029", "UC-031"], "c006": ["UC-059", "UC-029"], "c007": ["UC-026", "UC-150"], "c010": ["UC-081", "UC-082"], "c011": ["UC-077", "UC-060", "UC-078"], "c012": ["UC-081", "UC-114"], "c013": ["UC-060", "UC-079"], "c020": ["UC-145", "UC-038"], "c021": ["UC-126", "UC-145"], "c022": ["UC-144", "UC-047"], "c023": ["UC-149", "UC-115"], "c024": ["UC-145", "UC-041"], "c025": ["UC-043", "UC-146"], "c030": ["UC-046", "UC-138"], "c031": ["UC-036", "UC-037"], "c032": ["UC-041", "UC-145"], "c033": ["UC-039", "UC-043"], "c040": ["UC-046", "UC-047"], "c041": ["UC-045", "UC-036"], "c042": ["UC-044", "UC-037"], "c043": ["UC-027", "UC-039"], "c044": ["UC-043", "UC-039"], "c050": ["UC-115", "UC-047"], "c051": ["UC-111", "UC-147"], "c052": ["UC-046", "UC-115"], "c053": ["UC-150", "UC-112"], "c054": ["UC-039", "UC-147"], "c060": ["UC-058", "UC-152"], "c061": ["UC-058", "UC-152"], "c062": ["UC-082", "UC-060"], "c063": ["UC-057", "UC-061"], "c064": ["UC-030", "UC-062"], "c065": ["UC-063"], "c070": ["UC-052", "UC-054"], "c071": ["UC-050", "UC-171"], "c072": ["UC-052", "UC-055"], "c073": ["UC-048", "UC-049"], "c074": ["UC-051", "UC-169"], "c080": ["UC-082", "UC-091"], "c081": ["UC-077", "UC-078"], "c082": ["UC-060", "UC-080"], "c083": ["UC-082", "UC-083"], "c084": ["UC-090", "UC-091"], "c085": ["UC-059", "UC-079"], "c090": ["UC-042", "UC-144"], "c091": ["UC-042", "UC-158"], "c092": ["UC-036", "UC-045"], "c093": ["UC-039", "UC-037"], "c094": ["UC-013", "UC-022"], "c095": ["UC-037", "UC-039"], "c096": ["UC-059", "UC-029"], "c097": ["UC-022", "UC-170"], "c100": ["UC-081", "UC-029"], "c101": ["UC-024", "UC-031"], "c102": ["UC-072", "UC-028"], "c103": ["UC-025", "UC-033"], "c104": ["UC-026", "UC-031"], "c105": ["UC-066", "UC-070"], "c106": ["UC-102", "UC-073"], "c110": ["UC-006", "UC-010"], "c111": ["UC-011", "UC-055"], "c112": ["UC-003", "UC-150"], "c113": ["UC-001", "UC-007"], "c114": ["UC-009", "UC-005"], "c115": ["UC-004", "UC-007"], "c116": ["UC-084", "UC-089"], "c120": ["UC-013", "UC-019"], "c121": ["UC-013", "UC-083"], "c122": ["UC-015", "UC-051"], "c123": ["UC-016", "UC-020"], "c124": ["UC-014", "UC-023"], "c125": ["UC-017", "UC-018"], "c130": ["UC-110", "UC-112"], "c131": ["UC-039", "UC-043"], "c132": ["UC-036", "UC-045"], "c133": ["UC-024", "UC-027"], "c134": ["UC-048", "UC-051"], "c140": ["UC-115", "UC-149"], "c141": ["UC-109", "UC-114"], "c142": ["UC-111", "UC-113"], "c143": ["UC-116", "UC-118"], "c144": ["UC-150", "UC-019"], "c145": ["UC-112", "UC-110"], "c150": ["UC-047", "UC-145"], "c151": ["UC-115", "UC-039"], "c152": ["UC-114", "UC-120"], "c153": ["UC-111", "UC-113"], "c154": ["UC-147", "UC-115"]};
+
+
+const COMP_SAVE_DEFAULTS = {"c001": 5, "c002": 8, "c003": 8, "c004": 5, "c005": 18, "c006": 15, "c007": 18, "c008": 35, "c009": 33, "c010": 5, "c011": 18, "c012": 20, "c013": 30, "c014": 35, "c015": 33, "c016": 33, "c017": 33, "c018": 27, "c019": 35, "c020": 8, "c021": 20, "c022": 20, "c023": 20, "c024": 33, "c025": 35, "c026": 33, "c027": 35, "c028": 35, "c029": 8, "c030": 8, "c031": 5, "c032": 12, "c033": 20, "c034": 18, "c035": 33, "c036": 30, "c037": 33, "c038": 33, "c039": 33, "c040": 5, "c041": 5, "c042": 18, "c043": 18, "c044": 15, "c045": 30, "c046": 30, "c047": 30, "c048": 33, "c049": 33, "c050": 5, "c051": 10, "c052": 18, "c053": 15, "c054": 18, "c055": 30, "c056": 30, "c057": 33, "c058": 5, "c059": 5, "c060": 10, "c061": 18, "c062": 15, "c063": 20, "c064": 30, "c065": 35, "c066": 30, "c067": 30, "c068": 35, "c069": 33, "c070": 33, "c071": 30, "c072": 30, "c073": 5, "c074": 5, "c075": 18, "c076": 35, "c077": 33, "c078": 33, "c079": 33, "c080": 5, "c081": 8, "c082": 5, "c083": 5, "c084": 18, "c085": 15, "c086": 18, "c087": 15, "c088": 15, "c089": 33, "c090": 33, "c091": 30, "c092": 33, "c093": 33, "c094": 30, "c095": 5, "c096": 5, "c097": 5, "c098": 2, "c099": 5, "c100": 18, "c101": 15, "c102": 12, "c103": 15, "c104": 15, "c105": 30, "c106": 30, "c107": 30, "c108": 27};
+
+
+const COMP_DESCRIPTIONS = {"c001": "Defines multi-year capital investment plans aligned to business strategy; prioritises CAPEX allocation and evaluates ROI for major projects.", "c002": "Sets long-range financial targets and KPIs; translates corporate strategy into measurable finance objectives and planning horizons.", "c003": "Translates strategic targets into annual operating plans; coordinates across business units to align resources with approved budgets.", "c004": "Establishes and maintains the rules, templates, and governance frameworks governing the annual budgeting process.", "c005": "Reviews and formally approves submitted budget plans; ensures alignment with strategic targets before releasing budgets for execution.", "c006": "Tracks adherence to approved budgets throughout the year; escalates variances and policy breaches to management.", "c007": "Designs and maintains the forecasting models, methodologies, and assumptions used for rolling and long-range financial projections.", "c008": "Produces periodic updated financial forecasts by collecting actuals, refreshing drivers, and remodelling projections for the planning horizon.", "c009": "Prepares the annual budget by consolidating submissions from all business units and reconciling to approved financial targets.", "c010": "Defines and maintains the policies, procedures, and internal rules governing financial operations and transaction processing.", "c011": "Establishes the delegation-of-authority framework; defines spending limits and approval thresholds across organisational levels.", "c012": "Reconciles operational accounts and subledgers to general ledger balances; resolves discrepancies in transaction-level records.", "c013": "Processes payroll journals and ensures accurate recording of salary, benefits, and payroll-related accruals in the general ledger.", "c014": "Manages the invoicing, collection, and recording of amounts owed by customers; maintains AR subledger accuracy.", "c015": "Resolves customer short-payments and deductions; codes disputes, manages credit notes, and tracks resolution to closure.", "c016": "Processes employee expense reports and corporate card transactions; enforces policy compliance and posts to the GL.", "c017": "Records asset acquisitions, disposals, depreciation, and impairments; maintains the fixed asset register in line with accounting policy.", "c018": "Tracks project costs against budgets; records project-related expenses, capitalisation, and revenue recognition milestones.", "c019": "Processes supplier invoices from receipt through to payment; manages PO matching, exception resolution, and payment execution.", "c020": "Develops and maintains the accounting policies and procedures that govern financial reporting across the organisation.", "c021": "Performs balance sheet account reconciliations as part of the period-end close; resolves outstanding items and ensures GL accuracy.", "c022": "Reviews and approves manual journal entries before posting; ensures adequacy of supporting documentation and compliance with policy.", "c023": "Plans and manages the period-end close calendar; assigns tasks, monitors progress, and escalates bottlenecks to meet close deadlines.", "c024": "Establishes and maintains transfer pricing policies for intercompany transactions; ensures arm's-length compliance across jurisdictions.", "c025": "Executes all pre-close activities including accruals, provisions, and adjusting entries in preparation for the financial close.", "c026": "Prepares tax-related journal entries, provisions, and deferred tax calculations as part of the accounting close process.", "c027": "Monitors and reports on close performance metrics including days-to-close, error rates, and completion status of close tasks.", "c028": "Consolidates entity-level financial results; eliminates intercompany balances and performs currency translation for group reporting.", "c029": "Defines and maintains the rules, standards, and procedures governing management reporting across the organisation.", "c030": "Designs and maintains the management reporting framework including report structures, data sources, and distribution schedules.", "c031": "Defines, reviews, and maintains the suite of KPIs used to measure business performance; ensures alignment with strategy.", "c032": "Integrates financial performance metrics into incentive and compensation frameworks; models pay-for-performance linkages.", "c033": "Conducts structured reviews of actual performance against targets; assesses root causes and quantifies the impact of variances.", "c034": "Tracks KPI performance on an ongoing basis; produces scorecards and dashboards and escalates underperformance.", "c035": "Develops financial models, scenario analyses, and business cases to support strategic and operational decision-making.", "c036": "Maintains product and service cost models; allocates overheads and analyses manufacturing or service delivery costs.", "c037": "Produces regular management accounts and performance reports for internal stakeholders across all business units.", "c038": "Builds and maintains interactive dashboards and visualisations that provide real-time performance visibility to management.", "c039": "Prepares structured business cases to justify investment decisions; includes financial modelling, risk assessment, and payback analysis.", "c040": "Manages relationships with institutional investors and analysts; coordinates investor communications, roadshows, and Q&A processes.", "c041": "Identifies and defines financial disclosure requirements under applicable reporting standards; maintains a disclosure obligations register.", "c042": "Manages the internal audit function; plans audit cycles, assigns resources, and coordinates with external auditors.", "c043": "Reviews and approves the financial statements before publication; ensures accuracy, completeness, and compliance with standards.", "c044": "Monitors compliance with financial reporting regulations; tracks regulatory changes and ensures timely corrective action.", "c045": "Handles regulatory enquiries and examinations; coordinates responses to financial regulators and government agencies.", "c046": "Prepares investor presentations, earnings materials, and responses to shareholder and analyst queries.", "c047": "Compiles and formats board and executive committee reporting packs; coordinates sign-off and distribution.", "c048": "Prepares statutory financial statements including income statement, balance sheet, and cash flow in accordance with IFRS or local GAAP.", "c049": "Produces regulatory and statutory reports required by financial regulators, tax authorities, and government bodies.", "c050": "Defines the enterprise risk management framework; sets risk appetite and establishes the governance structure for risk oversight.", "c051": "Designs and maintains the internal controls framework; maps controls to financial risks and ensures ICFR/SOX compliance.", "c052": "Continuously monitors the operating effectiveness of internal controls; identifies control gaps and tracks remediation.", "c053": "Monitors the risk and compliance environment on an ongoing basis; tracks emerging risks and escalates material issues.", "c054": "Investigates fraud indicators and manages fraud cases from detection through to resolution; maintains fraud risk registers.", "c055": "Assesses and scores individual risks across the risk register; prioritises risks for management attention based on likelihood and impact.", "c056": "Produces risk management reports for the board, audit committee, and regulators; consolidates risk exposures.", "c057": "Prepares compliance and controls reporting for governance bodies; evidences the state of the control environment.", "c058": "Establishes treasury policies, limits, and operating procedures governing cash management, hedging, and counterparty risk.", "c059": "Defines the policies and procedures governing investment activity including asset allocation, counterparty limits, and return targets.", "c060": "Develops short- and long-term liquidity forecasts; identifies funding gaps and optimises cash deployment across the group.", "c061": "Identifies, measures, and manages foreign currency exposures; recommends hedging strategies and executes FX transactions.", "c062": "Monitors investment portfolio performance against benchmarks; prepares performance attribution and reporting for stakeholders.", "c063": "Reconciles bank account balances to treasury and GL records daily; resolves unmatched items and ensures cash accuracy.", "c064": "Develops and maintains the investment portfolio plan; sets target allocations and rebalancing guidelines.", "c065": "Manages daily cash positioning; executes interbank transfers, sweeps, and cash concentration across group bank accounts.", "c066": "Manages the group's debt portfolio and equity capital; optimises the capital structure and monitors covenant compliance.", "c067": "Manages the investment portfolio on an ongoing basis; executes trades, monitors exposures, and rebalances as required.", "c068": "Produces short-to-medium-term cash flow forecasts; models inflows and outflows to optimise liquidity and reduce idle cash.", "c069": "Executes trades in financial instruments; manages settlement, confirms counterparty transactions, and maintains deal records.", "c070": "Builds financial models to evaluate investment opportunities, assess returns, and support capital allocation decisions.", "c071": "Manages capital raising activities including debt issuance, equity placement, and securitisation transactions.", "c072": "Executes foreign currency transactions; confirms rates, settles FX deals, and records currency transactions in the system.", "c073": "Develops the overall tax strategy; identifies tax-planning opportunities and manages the group's effective tax rate.", "c074": "Maintains tax compliance policies and procedures; ensures consistent application of tax rules across all jurisdictions.", "c075": "Monitors tax compliance obligations across all jurisdictions; tracks filing deadlines and identifies compliance gaps.", "c076": "Prepares and files corporate tax returns across jurisdictions; manages tax computations and liaises with tax authorities.", "c077": "Provides tax advice on specific transactions; advises on VAT, withholding tax, and other transactional tax matters.", "c078": "Researches tax legislation, case law, and regulatory guidance; produces technical notes and advice on tax positions.", "c079": "Handles queries from tax authorities and internal stakeholders; responds to tax audits and information requests.", "c080": "Defines the internal audit strategy, annual audit plan, and resource requirements aligned to risk priorities.", "c081": "Defines and executes M&A strategy; identifies acquisition targets, evaluates strategic fit, and manages the deal pipeline.", "c082": "Sets the overall financial strategy; governs financial policies and ensures the finance function supports corporate objectives.", "c083": "Defines requirements for the external audit; manages the auditor relationship, scoping, and audit timetable.", "c084": "Tracks implementation of internal audit recommendations; monitors management actions and escalates overdue items.", "c085": "Monitors delivery of M&A integration synergies; tracks realisation against the deal business case.", "c086": "Manages the M&A board approval process; prepares approval papers and coordinates with governance bodies.", "c087": "Monitors adherence to financial policies across the organisation; identifies breaches and drives corrective action.", "c088": "Monitors performance and compliance of third-party service providers against contractual SLAs and KPIs.", "c089": "Screens and identifies potential M&A targets; performs initial financial screening and strategic fit assessment.", "c090": "Prepares internal audit findings reports; communicates results to management and the audit committee.", "c091": "Executes M&A deals from signing through to close; manages legal, financial, and regulatory workstreams.", "c092": "Conducts financial due diligence on acquisition targets; validates financial information and identifies deal risks.", "c093": "Executes internal audits across finance and business processes; produces audit findings and recommendations.", "c094": "Leads special finance projects and internal consulting engagements; provides finance expertise to cross-functional initiatives.", "c095": "Designs the finance systems architecture; evaluates technology options and plans system roadmap aligned to business needs.", "c096": "Develops and maintains finance-wide policies and procedures; ensures consistency and compliance across the function.", "c097": "Designs and maintains the finance service delivery model; determines optimal sourcing, structure, and operating model for finance.", "c098": "Plans finance headcount requirements; manages workforce planning, succession, and talent pipeline for the finance function.", "c099": "Defines the data governance strategy and rules for finance data; establishes data ownership, quality standards, and lineage.", "c100": "Monitors and enforces compliance with the finance systems architecture; governs technology changes and integration standards.", "c101": "Governs master data quality across finance-critical datasets; manages data stewardship and MDM processes.", "c102": "Manages the performance review process for finance staff; sets objectives, conducts evaluations, and calibrates ratings.", "c103": "Monitors adherence to financial policies across the organisation; identifies breaches and drives corrective action.", "c104": "Monitors performance and compliance of third-party service providers against contractual SLAs and KPIs.", "c105": "Maintains and supports finance systems and applications; manages upgrades, patches, user access, and system performance.", "c106": "Manages relationships with third-party finance service providers; oversees delivery, resolves issues, and manages contracts.", "c107": "Maintains the accuracy and completeness of master data records in finance systems; processes data change requests.", "c108": "Manages the learning, development, and career progression of finance staff; builds capability aligned to future skills needs."};
+
+
+// ════════════════════════════════════════════════════════
+// TAXONOMY MAPPING DATA
+// ════════════════════════════════════════════════════════
+const TAXONOMY_MAPPING = [
+  {new:"Financial Planning, Budgeting & Forecasting", grp:"CO", fte:54.6, s:15.1, t:46.7, o:38.2,
+   from:[{old:"Annual Planning & Budgeting",fte:15.0,share:1.0,note:"Direct match"},
+         {old:"Group Planning & Productivity",fte:25.0,share:0.6,note:"FP&B planning work"},
+         {old:"Performance Management",fte:7.0,share:0.3,note:"Budgeting overlap"},
+         {old:"FP&T (Finance Planning & Transactions)",fte:45.0,share:0.5,note:"Planning portion of FP&T"}]},
+  {new:"Financial Operations", grp:"GSS", fte:568.5, s:3.3, t:14.7, o:82.0,
+   from:[{old:"Accounts to Report (A2R)",fte:270.0,share:1.0,note:"Journal entry, recon, close"},
+         {old:"Invoice to Pay (I2P)",fte:247.0,share:1.0,note:"AP/P2P operations"},
+         {old:"Order to Cash (O2C)",fte:50.0,share:1.0,note:"AR/O2C operations"},
+         {old:"Procedures & Control",fte:3.0,share:0.5,note:"Operational control execution"}]},
+  {new:"Accounting Close & Consolidation", grp:"GSS", fte:61.5, s:8.3, t:25.5, o:66.2,
+   from:[{old:"Financial & Mgmt Reporting",fte:34.0,share:0.6,note:"Close & consolidation portion"},
+         {old:"FP&T (Finance Planning & Transactions)",fte:45.0,share:0.3,note:"Close support in SSC"},
+         {old:"Other GSS",fte:69.0,share:0.4,note:"Close support in SSC"}]},
+  {new:"Business Performance Management", grp:"BF", fte:227.1, s:21.0, t:47.1, o:31.9,
+   from:[{old:"Performance Management",fte:7.0,share:0.7,note:"KPIs, reporting, analytics"},
+         {old:"Group Planning & Productivity",fte:25.0,share:0.4,note:"Performance/productivity work"},
+         {old:"Business Facing CP/SE",fte:677.2,share:0.3,note:"BF performance reporting"},
+         {old:"FP&T (Finance Planning & Transactions)",fte:45.0,share:0.2,note:"Reporting support"}]},
+  {new:"External Financial Reporting", grp:"CO", fte:28.2, s:8.5, t:23.9, o:67.6,
+   from:[{old:"Financial & Mgmt Reporting",fte:34.0,share:0.4,note:"External reporting portion"},
+         {old:"Other GSS",fte:69.0,share:0.2,note:"Statutory reporting support"},
+         {old:"Procedures & Control",fte:3.0,share:0.25,note:"Reporting controls"}]},
+  {new:"Risk & Compliance Management", grp:"CO", fte:62.8, s:13.5, t:55.7, o:30.8,
+   from:[{old:"Compliance",fte:62.0,share:1.0,note:"Direct match"},
+         {old:"Procedures & Control",fte:3.0,share:0.25,note:"Controls framework"}]},
+  {new:"Treasury & Investments", grp:"CO", fte:62.1, s:14.1, t:32.6, o:53.3,
+   from:[{old:"Treasury",fte:48.3,share:1.0,note:"Direct match"},
+         {old:"Other GSS",fte:69.0,share:0.2,note:"Treasury operations support"}]},
+  {new:"Tax Management", grp:"CO", fte:120.2, s:11.2, t:33.0, o:55.8,
+   from:[{old:"Tax",fte:120.2,share:1.0,note:"Direct match"}]},
+  {new:"Specialty Services", grp:"BF", fte:253.5, s:21.8, t:47.3, o:30.9,
+   from:[{old:"Business Facing CP/SE",fte:677.2,share:0.35,note:"M&A, audit, strategy services"},
+         {old:"Strategy Planning",fte:9.0,share:1.0,note:"Strategy & M&A work"},
+         {old:"GSS Projects",fte:15.0,share:0.5,note:"Transformation / special projects"}]},
+  {new:"Business Administration", grp:"BF", fte:258.3, s:20.3, t:45.7, o:34.0,
+   from:[{old:"Business Facing CP/SE",fte:677.2,share:0.35,note:"Finance admin, governance"},
+         {old:"GSS Projects",fte:15.0,share:0.5,note:"Systems & admin projects"},
+         {old:"Other GSS",fte:69.0,share:0.2,note:"Admin & master data"}]},
+];
+
+
+'use strict';
+// ══════════════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════════════
+// ══════════════════════════════════════════════════════════════════
+// SCORING DIMENSION DEFINITIONS (from toolkit)
+// ══════════════════════════════════════════════════════════════════
+
+// ══════════════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════════════
+const ST = {
+  aiF:'all', grpF:'all', selAI:'h',
+  ucF:'all', ucFn:'', ucComp:'', ucAction:'', ucSearch:'',
+  scView:'all', scFn:'', scComp:'', scSearch:'',
+  fns:[],
+  uc: [], // UC library not used in CBM app
+  weights: {v:30, f:20, s:20, d:15, sp:10, r:5},
+  compSave:    {},  // compId -> saving %
+  compMap:     {},  // compId -> {clientName, desc}
+  splitShares: {}   // 'oldFn|ibmFn' -> pct override
+};
+
+function calcWeighted(r, w) {
+  w = w || {v:30,f:20,s:20,d:15,sp:10,r:5};
+  return +((r.v*(w.v/100) + r.f*(w.f/100) + r.s*(w.s/100) + r.d*(w.d/100) + r.sp*(w.sp/100) + r.r*(w.r/100)) * 20).toFixed(1);
+}
+
+function getAction(ws) {
+  return ws >= 80 ? 'Deploy Now' : ws >= 60 ? 'Next Wave' : 'Later Phase';
+}
+
+function getAILvl(r) {
+  const sc = r.score || 0;
+  return sc >= 85 ? 'h' : sc >= 70 ? 'm' : 'l';
+}
+
+
+// ════════════════════════════════════
+// COMPONENT → USE CASE MAPPING (pre-loaded)
+// ════════════════════════════════════
+
+function scoreDimRow(key, label, r) {
+  const def=SCORE_DEFS[key], score=r[key]||0, txt=r[key+'_txt']||'', pct=(score/5)*100;
+  return '<div class="udg-dim-row">'+
+    '<div class="udg-dim-lbl">'+label+'</div>'+
+    '<div class="udg-dim-bar-wrap"><div class="udg-dim-bar" style="width:'+pct+'%;background:'+def.col+'"></div></div>'+
+    '<div class="udg-dim-score" style="color:'+def.col+'">'+score+'/5</div>'+
+    '<div class="udg-dim-txt">'+H(txt)+'</div>'+
+  '</div>';
+}
+
+// Eye btn delegation in scoring table
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.sc-eye-btn');
+  if (btn) openUCModal(btn.dataset.ucid);
+});
+
+function highlightCBMComp(fnId, band, compId) {
+  switchTab('cbm');
+  const fn = ST.fns.find(f=>f.id===fnId);
+  if (fn) { ST.grpF=fn.grp; ['all','CO','BF','GSS'].forEach(x=>{const e=document.getElementById('g-'+x);if(e)e.className='chip'+(x===fn.grp?' on-grp':'');});}
+  render();
+  setTimeout(()=>{
+    document.querySelectorAll('.comp').forEach(card=>{
+      const acts=card.querySelector('.comp-actions');
+      if(acts&&acts.dataset.cid===compId){
+        card.scrollIntoView({behavior:'smooth',block:'center'});
+        card.style.outline='3px solid var(--blue60)';
+        card.style.outlineOffset='2px';
+        setTimeout(()=>{card.style.outline='';card.style.outlineOffset='';},2500);
+      }
+    });
+  },250);
+}
+
+
+// ════════════════════════════════════════════════════════════════
+// SIMULATION PANEL
+// ════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// SIMULATION — component-level saving % (stored in ST.compSave)
+// ════════════════════════════════════════════════════════════════
+
+// ST.compSave = { compId: savePct (0-100) }
+// Initialised from COMP_SAVE_DEFAULTS; user edits stored live
+
+let SIM_BAND = 'all'; // filter state for simulation band
+
+function getCompSavePct(compId) {
+  if (ST.compSave && ST.compSave[compId] !== undefined) return ST.compSave[compId];
+  return COMP_SAVE_DEFAULTS[compId] !== undefined ? COMP_SAVE_DEFAULTS[compId] : 0;
+}
+
+function initCompSave() {
+  if (!ST.compSave) ST.compSave = {};
+  // Pre-populate from COMP_SAVE_DEFAULTS for any component not yet edited
+  ST.fns.forEach(fn => {
+    ['s','t','o'].forEach(band => {
+      (fn.comps[band]||[]).forEach(comp => {
+        if (ST.compSave[comp.id] === undefined) {
+          ST.compSave[comp.id] = COMP_SAVE_DEFAULTS[comp.id] !== undefined
+            ? COMP_SAVE_DEFAULTS[comp.id] : 0;
+        }
+      });
+    });
+  });
+}
+
+function resetSavingPcts() {
+  if (!confirm('Reset all saving % to UC-derived defaults?')) return;
+  ST.compSave = {};
+  initCompSave();
+  renderSimulation();
+  persist();
+}
+
+function setSimBand(v) {
+  SIM_BAND = v;
+  ['all','s','t','o'].forEach(x => {
+    const e = document.getElementById('simb-'+x);
+    if (e) e.className = 'chip' + (x===v ? (v==='all' ? ' on-all' : v==='s' ? ' on-h' : v==='t' ? ' on-m' : ' on-grp') : '');
+  });
+  renderSimulation();
+}
+
+function onCompSaveEdit(compId, val) {
+  const n = parseInt(val);
+  if (!ST.compSave) ST.compSave = {};
+  ST.compSave[compId] = isNaN(n) ? 0 : Math.max(0, Math.min(100, n));
+  // Update totals live without full re-render
+  updateSimTotals();
+  persist();
+}
+
+function updateSimTotals() {
+  // Recalculate all saving cells from current inputs
+  const inputs = document.querySelectorAll('.sim-pct-inp');
+  let total = 0;
+  inputs.forEach(inp => {
+    const compId = inp.dataset.cid;
+    const compFte = parseFloat(inp.dataset.cfte)||0;
+    const pct = parseInt(inp.value)||0;
+    const saving = compFte * pct / 100;
+    total += saving;
+    const saveCell = document.getElementById('sc-'+compId);
+    if (saveCell) {
+      saveCell.textContent = saving.toFixed(1);
+      saveCell.style.color = pct > 0 ? 'var(--blue60)' : 'var(--c40)';
+    }
+  });
+  const lbl = document.getElementById('sim-total-lbl');
+  if (lbl) lbl.innerHTML = '<strong style="color:var(--blue60);font-family:var(--mono);font-size:13px">'+Math.round(total)+'</strong> FTE total saving';
+  const footTotal = document.getElementById('sim-foot-total');
+  if (footTotal) footTotal.textContent = Math.round(total);
+  persist();
+}
+
+// ════════════════════════════════════════════════════════
+// RECOMPUTE IBM VERTICAL FTEs FROM SPLIT SHARES
+// ════════════════════════════════════════════════════════
+function recomputeIBMFtes() {
+  if (!ST.splitShares) ST.splitShares = {};
+  TAXONOMY_MAPPING.forEach(ibm => {
+    let total = 0;
+    (ibm.from||[]).forEach(src => {
+      const key = src.old + '|' + ibm.new;
+      const pct = ST.splitShares[key] !== undefined
+        ? ST.splitShares[key]
+        : Math.round(src.share * 100);
+      total += src.fte * pct / 100;
+    });
+    // Update ST.fns for this IBM vertical
+    const fn = ST.fns.find(f => f.name === ibm.new);
+    if (fn) fn.fte = Math.round(total * 10) / 10;
+  });
+}
+
+
+function renderSimulation() {
+  initCompSave();
+
+  const fnFilter  = document.getElementById('sim-fn-filter')?.value || '';
+  const vis = ST.fns.filter(f => ST.grpF==='all' || f.grp===ST.grpF);
+
+  // Populate fn filter dropdown if empty
+  const fnSel = document.getElementById('sim-fn-filter');
+  if (fnSel && fnSel.options.length <= 1) {
+    vis.forEach(fn => {
+      const o = document.createElement('option');
+      o.value = fn.id; o.textContent = fn.name; fnSel.appendChild(o);
+    });
+  }
+
+  const tbody = document.getElementById('sim-comp-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  let grandTotal = 0;
+  let rowCount = 0;
+  const BAND_LABELS = {s:'Strategic', t:'Governance', o:'Operational'};
+  const BAND_CLS    = {s:'td-s', t:'td-t', o:'td-o'};
+
+  vis.forEach(fn => {
+    if (fnFilter && fn.id !== fnFilter) return;
+    const fn_fte = Number(fn.fte)||0;
+    let fnFirstRow = true;
+    let fnRowCount = 0;
+    const fnRows = [];
+
+    ['s','t','o'].forEach(band => {
+      if (SIM_BAND !== 'all' && band !== SIM_BAND) return;
+      const comps = fn.comps[band]||[];
+      comps.forEach(comp => {
+        const comp_fte = fn_fte * (comp.pct/100);
+        const savePct  = getCompSavePct(comp.id);
+        const saving   = comp_fte * savePct / 100;
+        grandTotal += saving;
+        rowCount++;
+
+        // UC links summary
+        const ucLinks = (comp.uc_links||[]);
+        const ucSummary = ucLinks.length
+          ? ucLinks.map(uid => {
+              const u = ST.uc.find(r=>r.uc===uid);
+              const lvl = u ? getAILvl(u) : 'l';
+              return '<span class="sim-uc-chip '+lvl+'">'+uid+'</span>';
+            }).join('')
+          : '<span style="color:var(--c40);font-size:9px">none linked</span>';
+
+        fnRows.push({band, comp, comp_fte, savePct, saving, ucSummary});
+        fnFirstRow = false;
+        fnRowCount++;
+      });
+    });
+
+    if (!fnRows.length) return;
+
+    fnRows.forEach((r, ri) => {
+      const tr = document.createElement('tr');
+      tr.className = 'sim-comp-row';
+      const bcls = BAND_CLS[r.band];
+      tr.innerHTML =
+        // Function name — only on first row of this function, spanning all rows
+        (ri === 0 ? '<td class="sim-fn-cell" rowspan="'+fnRows.length+'">'+H(fn.name)+'<div class="sim-fn-fte">'+fmt(fn_fte)+' FTE</div></td>' : '')+
+        '<td class="sim-band-cell '+bcls+'">'+BAND_LABELS[r.band]+'</td>'+
+        '<td class="sim-comp-name">'+H(r.comp.name)+'</td>'+
+        '<td class="sim-fte-cell" style="text-align:right;font-family:var(--mono);font-weight:700">'+r.comp_fte.toFixed(1)+'</td>'+
+        '<td class="sim-uc-cell">'+r.ucSummary+'</td>'+
+        '<td class="sim-pct-cell">'+
+          '<div class="sim-pct-wrap">'+
+            '<input type="number" class="sim-pct-inp" min="0" max="100" value="'+r.savePct+'" '+
+              'data-cid="'+r.comp.id+'" data-cfte="'+r.comp_fte.toFixed(2)+'" '+
+              'oninput="onCompSaveEdit(this.dataset.cid,this.value);updateSimTotals()">'+
+            '<span class="sim-pct-unit">%</span>'+
+            '<div class="sim-pct-bar-wrap"><div class="sim-pct-bar '+r.band+'" style="width:'+r.savePct+'%"></div></div>'+
+          '</div>'+
+        '</td>'+
+        '<td class="sim-save-cell td-addr" id="sc-'+r.comp.id+'">'+r.saving.toFixed(1)+'</td>';
+      tbody.appendChild(tr);
+    });
+
+    // Function subtotal row
+    const fnSaving = fnRows.reduce((s,r)=>s+r.saving, 0);
+    const str = document.createElement('tr');
+    str.className = 'sim-fn-subtotal';
+    str.innerHTML =
+      '<td colspan="'+(SIM_BAND==='all'?3:2)+'" style="font-weight:700;color:var(--c80);font-size:11px">'+H(fn.name)+' — Total</td>'+
+      '<td style="text-align:right;font-family:var(--mono);font-weight:700">'+fn_fte.toFixed(1)+'</td>'+
+      '<td></td><td></td>'+
+      '<td class="td-addr" style="font-family:var(--mono);font-weight:700">'+fnSaving.toFixed(1)+'</td>';
+    tbody.appendChild(str);
+  });
+
+  // Footer total
+  const tfoot = document.getElementById('sim-comp-foot');
+  if (tfoot) {
+    tfoot.innerHTML =
+      '<tr class="sim-grand">'+
+        '<td colspan="3">TOTAL — All Components</td>'+
+        '<td style="text-align:right;font-family:var(--mono)">'+
+          vis.filter(f=>!fnFilter||f.id===fnFilter).reduce((s,f)=>s+Number(f.fte),0).toFixed(1)+
+        '</td>'+
+        '<td></td><td></td>'+
+        '<td class="td-addr" id="sim-foot-total" style="font-family:var(--mono);font-size:14px">'+Math.round(grandTotal)+'</td>'+
+      '</tr>';
+  }
+
+  // Update header total label
+  const lbl = document.getElementById('sim-total-lbl');
+  if (lbl) lbl.innerHTML = '<strong style="color:var(--blue60);font-family:var(--mono);font-size:13px">'+Math.round(grandTotal)+'</strong> FTE projected saving';
+
+  // Footnote
+  const fn2 = document.getElementById('sim-footnote');
+  if (fn2) fn2.innerHTML =
+    '<strong>How to use:</strong> Each row shows one CBM component. '+
+    '<strong>Saving %</strong> = the % of that component FTE that AI is expected to displace or free up. '+
+    'Defaults are derived from the average effort-reduction % of the linked AI use cases in the toolkit. '+
+    'Edit any % directly — the FTE Saving column and grand total update instantly. '+
+    'Use the Function and Band filters to focus on a specific area. '+
+    'Click <em>Reset to UC defaults</em> to restore all values. '+
+    'Components with no linked use cases default to 0% — link use cases via <em>Edit Component</em> in the CBM tab.';
+
+}
+
+
+
+
+function scoreDimRow(key, label, r) {
+  const def=SCORE_DEFS[key], score=r[key]||0, txt=r[key+'_txt']||'', pct=(score/5)*100;
+  return '<div class="udg-dim-row">'+
+    '<div class="udg-dim-lbl">'+label+'</div>'+
+    '<div class="udg-dim-bar-wrap"><div class="udg-dim-bar" style="width:'+pct+'%;background:'+def.col+'"></div></div>'+
+    '<div class="udg-dim-score" style="color:'+def.col+'">'+score+'/5</div>'+
+    '<div class="udg-dim-txt">'+H(txt)+'</div>'+
+  '</div>';
+}
+
+// Eye btn delegation in scoring table
+document.addEventListener('click', e => {
+  const btn = e.target.closest('.sc-eye-btn');
+  if (btn) openUCModal(btn.dataset.ucid);
+});
+
+function highlightCBMComp(fnId, band, compId) {
+  switchTab('cbm');
+  const fn = ST.fns.find(f=>f.id===fnId);
+  if (fn) { ST.grpF=fn.grp; ['all','CO','BF','GSS'].forEach(x=>{const e=document.getElementById('g-'+x);if(e)e.className='chip'+(x===fn.grp?' on-grp':'');});}
+  render();
+  setTimeout(()=>{
+    document.querySelectorAll('.comp').forEach(card=>{
+      const acts=card.querySelector('.comp-actions');
+      if(acts&&acts.dataset.cid===compId){
+        card.scrollIntoView({behavior:'smooth',block:'center'});
+        card.style.outline='3px solid var(--blue60)';
+        card.style.outlineOffset='2px';
+        setTimeout(()=>{card.style.outline='';card.style.outlineOffset='';},2500);
+      }
+    });
+  },250);
+}
+
+
+// ════════════════════════════════════════════════════════════════
+// SIMULATION PANEL
+// ════════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════════════════════
+// SIMULATION — component-level saving % (stored in ST.compSave)
+// ════════════════════════════════════════════════════════════════
+
+// ST.compSave = { compId: savePct (0-100) }
+// Initialised from COMP_SAVE_DEFAULTS; user edits stored live
+
+
+function getCompSavePct(compId) {
+  if (ST.compSave && ST.compSave[compId] !== undefined) return ST.compSave[compId];
+  return COMP_SAVE_DEFAULTS[compId] !== undefined ? COMP_SAVE_DEFAULTS[compId] : 0;
+}
+
+function initCompSave() {
+  if (!ST.compSave) ST.compSave = {};
+  // Pre-populate from COMP_SAVE_DEFAULTS for any component not yet edited
+  ST.fns.forEach(fn => {
+    ['s','t','o'].forEach(band => {
+      (fn.comps[band]||[]).forEach(comp => {
+        if (ST.compSave[comp.id] === undefined) {
+          ST.compSave[comp.id] = COMP_SAVE_DEFAULTS[comp.id] !== undefined
+            ? COMP_SAVE_DEFAULTS[comp.id] : 0;
+        }
+      });
+    });
+  });
+}
+
+function resetSavingPcts() {
+  if (!confirm('Reset all saving % to UC-derived defaults?')) return;
+  ST.compSave = {};
+  initCompSave();
+  renderSimulation();
+  persist();
+}
+
+function setSimBand(v) {
+  SIM_BAND = v;
+  ['all','s','t','o'].forEach(x => {
+    const e = document.getElementById('simb-'+x);
+    if (e) e.className = 'chip' + (x===v ? (v==='all' ? ' on-all' : v==='s' ? ' on-h' : v==='t' ? ' on-m' : ' on-grp') : '');
+  });
+  renderSimulation();
+}
+
+function onCompSaveEdit(compId, val) {
+  const n = parseInt(val);
+  if (!ST.compSave) ST.compSave = {};
+  ST.compSave[compId] = isNaN(n) ? 0 : Math.max(0, Math.min(100, n));
+  // Update totals live without full re-render
+  updateSimTotals();
+  persist();
+}
+
+function updateSimTotals() {
+  // Recalculate all saving cells from current inputs
+  const inputs = document.querySelectorAll('.sim-pct-inp');
+  let total = 0;
+  inputs.forEach(inp => {
+    const compId = inp.dataset.cid;
+    const compFte = parseFloat(inp.dataset.cfte)||0;
+    const pct = parseInt(inp.value)||0;
+    const saving = compFte * pct / 100;
+    total += saving;
+    const saveCell = document.getElementById('sc-'+compId);
+    if (saveCell) {
+      saveCell.textContent = saving.toFixed(1);
+      saveCell.style.color = pct > 0 ? 'var(--blue60)' : 'var(--c40)';
+    }
+  });
+  const lbl = document.getElementById('sim-total-lbl');
+  if (lbl) lbl.innerHTML = '<strong style="color:var(--blue60);font-family:var(--mono);font-size:13px">'+Math.round(total)+'</strong> FTE total saving';
+  const footTotal = document.getElementById('sim-foot-total');
+  if (footTotal) footTotal.textContent = Math.round(total);
+  persist();
+}
+
+// ════════════════════════════════════════════════════════
+// RECOMPUTE IBM VERTICAL FTEs FROM SPLIT SHARES
+// ════════════════════════════════════════════════════════
+function recomputeIBMFtes() {
+  if (!ST.splitShares) ST.splitShares = {};
+  TAXONOMY_MAPPING.forEach(ibm => {
+    let total = 0;
+    (ibm.from||[]).forEach(src => {
+      const key = src.old + '|' + ibm.new;
+      const pct = ST.splitShares[key] !== undefined
+        ? ST.splitShares[key]
+        : Math.round(src.share * 100);
+      total += src.fte * pct / 100;
+    });
+    // Update ST.fns for this IBM vertical
+    const fn = ST.fns.find(f => f.name === ibm.new);
+    if (fn) fn.fte = Math.round(total * 10) / 10;
+  });
+}
+
+
+function renderSimulation() {
+  initCompSave();
+
+  const fnFilter  = document.getElementById('sim-fn-filter')?.value || '';
+  const vis = ST.fns.filter(f => ST.grpF==='all' || f.grp===ST.grpF);
+
+  // Populate fn filter dropdown if empty
+  const fnSel = document.getElementById('sim-fn-filter');
+  if (fnSel && fnSel.options.length <= 1) {
+    vis.forEach(fn => {
+      const o = document.createElement('option');
+      o.value = fn.id; o.textContent = fn.name; fnSel.appendChild(o);
+    });
+  }
+
+  const tbody = document.getElementById('sim-comp-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  let grandTotal = 0;
+  let rowCount = 0;
+  const BAND_LABELS = {s:'Strategic', t:'Governance', o:'Operational'};
+  const BAND_CLS    = {s:'td-s', t:'td-t', o:'td-o'};
+
+  vis.forEach(fn => {
+    if (fnFilter && fn.id !== fnFilter) return;
+    const fn_fte = Number(fn.fte)||0;
+    let fnFirstRow = true;
+    let fnRowCount = 0;
+    const fnRows = [];
+
+    ['s','t','o'].forEach(band => {
+      if (SIM_BAND !== 'all' && band !== SIM_BAND) return;
+      const comps = fn.comps[band]||[];
+      comps.forEach(comp => {
+        const comp_fte = fn_fte * (comp.pct/100);
+        const savePct  = getCompSavePct(comp.id);
+        const saving   = comp_fte * savePct / 100;
+        grandTotal += saving;
+        rowCount++;
+
+        // UC links summary
+        const ucLinks = (comp.uc_links||[]);
+        const ucSummary = ucLinks.length
+          ? ucLinks.map(uid => {
+              const u = ST.uc.find(r=>r.uc===uid);
+              const lvl = u ? getAILvl(u) : 'l';
+              return '<span class="sim-uc-chip '+lvl+'">'+uid+'</span>';
+            }).join('')
+          : '<span style="color:var(--c40);font-size:9px">none linked</span>';
+
+        fnRows.push({band, comp, comp_fte, savePct, saving, ucSummary});
+        fnFirstRow = false;
+        fnRowCount++;
+      });
+    });
+
+    if (!fnRows.length) return;
+
+    fnRows.forEach((r, ri) => {
+      const tr = document.createElement('tr');
+      tr.className = 'sim-comp-row';
+      const bcls = BAND_CLS[r.band];
+      tr.innerHTML =
+        // Function name — only on first row of this function, spanning all rows
+        (ri === 0 ? '<td class="sim-fn-cell" rowspan="'+fnRows.length+'">'+H(fn.name)+'<div class="sim-fn-fte">'+fmt(fn_fte)+' FTE</div></td>' : '')+
+        '<td class="sim-band-cell '+bcls+'">'+BAND_LABELS[r.band]+'</td>'+
+        '<td class="sim-comp-name">'+H(r.comp.name)+'</td>'+
+        '<td class="sim-fte-cell" style="text-align:right;font-family:var(--mono);font-weight:700">'+r.comp_fte.toFixed(1)+'</td>'+
+        '<td class="sim-uc-cell">'+r.ucSummary+'</td>'+
+        '<td class="sim-pct-cell">'+
+          '<div class="sim-pct-wrap">'+
+            '<input type="number" class="sim-pct-inp" min="0" max="100" value="'+r.savePct+'" '+
+              'data-cid="'+r.comp.id+'" data-cfte="'+r.comp_fte.toFixed(2)+'" '+
+              'oninput="onCompSaveEdit(this.dataset.cid,this.value);updateSimTotals()">'+
+            '<span class="sim-pct-unit">%</span>'+
+            '<div class="sim-pct-bar-wrap"><div class="sim-pct-bar '+r.band+'" style="width:'+r.savePct+'%"></div></div>'+
+          '</div>'+
+        '</td>'+
+        '<td class="sim-save-cell td-addr" id="sc-'+r.comp.id+'">'+r.saving.toFixed(1)+'</td>';
+      tbody.appendChild(tr);
+    });
+
+    // Function subtotal row
+    const fnSaving = fnRows.reduce((s,r)=>s+r.saving, 0);
+    const str = document.createElement('tr');
+    str.className = 'sim-fn-subtotal';
+    str.innerHTML =
+      '<td colspan="'+(SIM_BAND==='all'?3:2)+'" style="font-weight:700;color:var(--c80);font-size:11px">'+H(fn.name)+' — Total</td>'+
+      '<td style="text-align:right;font-family:var(--mono);font-weight:700">'+fn_fte.toFixed(1)+'</td>'+
+      '<td></td><td></td>'+
+      '<td class="td-addr" style="font-family:var(--mono);font-weight:700">'+fnSaving.toFixed(1)+'</td>';
+    tbody.appendChild(str);
+  });
+
+  // Footer total
+  const tfoot = document.getElementById('sim-comp-foot');
+  if (tfoot) {
+    tfoot.innerHTML =
+      '<tr class="sim-grand">'+
+        '<td colspan="3">TOTAL — All Components</td>'+
+        '<td style="text-align:right;font-family:var(--mono)">'+
+          vis.filter(f=>!fnFilter||f.id===fnFilter).reduce((s,f)=>s+Number(f.fte),0).toFixed(1)+
+        '</td>'+
+        '<td></td><td></td>'+
+        '<td class="td-addr" id="sim-foot-total" style="font-family:var(--mono);font-size:14px">'+Math.round(grandTotal)+'</td>'+
+      '</tr>';
+  }
+
+  // Update header total label
+  const lbl = document.getElementById('sim-total-lbl');
+  if (lbl) lbl.innerHTML = '<strong style="color:var(--blue60);font-family:var(--mono);font-size:13px">'+Math.round(grandTotal)+'</strong> FTE projected saving';
+
+  // Footnote
+  const fn2 = document.getElementById('sim-footnote');
+  if (fn2) fn2.innerHTML =
+    '<strong>How to use:</strong> Each row shows one CBM component. '+
+    '<strong>Saving %</strong> = the % of that component FTE that AI is expected to displace or free up. '+
+    'Defaults are derived from the average effort-reduction % of the linked AI use cases in the toolkit. '+
+    'Edit any % directly — the FTE Saving column and grand total update instantly. '+
+    'Use the Function and Band filters to focus on a specific area. '+
+    'Click <em>Reset to UC defaults</em> to restore all values. '+
+    'Components with no linked use cases default to 0% — link use cases via <em>Edit Component</em> in the CBM tab.';
+
+}
+
+
+
+function simSaving(cls, band, pool, fte_mid, pct, method) {
+  return '<div class="sim-saving '+cls+'">'+
+    '<div class="sim-saving-pool">Pool: '+pool+'</div>'+
+    '<div class="sim-saving-v">'+fte_mid+'</div>'+
+    '<div class="sim-saving-lbl">FTE Savings</div>'+
+    '<div class="sim-saving-range">'+method+'</div>'+
+    '<span class="sim-saving-pct">'+pct+' reduction</span>'+
+  '</div>';
+}
+
+
+
+
+// ════════════════════════════════════════════════════════
+// TAXONOMY MAPPING DATA
+// ════════════════════════════════════════════════════════
+
+function renderMappingTab() {
+  // ── Populate vertical filter ──
+  const fnSel = document.getElementById('map-fn-filter');
+  if (fnSel && fnSel.options.length <= 1) {
+    ST.fns.forEach(fn => {
+      const o = document.createElement('option');
+      o.value = fn.id; o.textContent = fn.name; fnSel.appendChild(o);
+    });
+  }
+
+  // ── TABLE 1: Vertical crosswalk (old 16 → new 10) ──
+  // ── TABLE 1: Editable split % — one row per split line ──
+  // ST.splitShares = { 'old_fn|ibm_fn': pct } — user overrides stored here
+  if (!ST.splitShares) ST.splitShares = {};
+
+  // Build split rows from TAXONOMY_MAPPING (one row per from[] entry)
+  const splitRows = [];
+  TAXONOMY_MAPPING.forEach(ibm => {
+    (ibm.from||[]).forEach(src => {
+      // Key: oldFnName + '|' + ibmFnName
+      const key = src.old + '|' + ibm.new;
+      // Current share: use user override if set, else default
+      const currentPct = ST.splitShares[key] !== undefined
+        ? ST.splitShares[key]
+        : Math.round(src.share * 100);
+      splitRows.push({
+        old: src.old, oldFte: src.fte,
+        ibm: ibm.new, ibmGrp: ibm.grp,
+        defaultPct: Math.round(src.share * 100),
+        currentPct, key,
+        note: src.note, isDirect: src.share === 1.0
+      });
+    });
+  });
+
+  // Group by old function name for display
+  const byOldFn = {};
+  splitRows.forEach(r => {
+    if (!byOldFn[r.old]) byOldFn[r.old] = [];
+    byOldFn[r.old].push(r);
+  });
+
+  const OLD_FN_ORDER = [
+    'Financial & Mgmt Reporting','Procedures & Control','Strategy Planning',
+    'Performance Management','Annual Planning & Budgeting','Group Planning & Productivity',
+    'Tax','Treasury','Compliance','Business Facing CP/SE',
+    'Accounts to Report (A2R)','Invoice to Pay (I2P)','Order to Cash (O2C)',
+    'FP&T (Finance Planning & Transactions)','Other GSS','GSS Projects'
+  ];
+
+  const vbody = document.getElementById('map-vertical-body');
+  if (!vbody) return;
+  vbody.innerHTML = '';
+
+  const totalClientFte = splitRows.reduce((s,r,i) => {
+    // Count each old fn FTE only once
+    return s + (splitRows.findIndex(x=>x.old===r.old)===i ? r.oldFte : 0);
+  }, 0);
+
+  OLD_FN_ORDER.forEach((oldName, fnIdx) => {
+    const rows = byOldFn[oldName];
+    if (!rows) return;
+    const fnBg = fnIdx%2===0 ? 'var(--white)' : '#f8f9fb';
+    const totalPct = rows.reduce((s,r)=>s+r.currentPct,0);
+    const pctOk = totalPct === 100;
+    const allocatedFte = rows[0].oldFte;
+
+    rows.forEach((r, ri) => {
+      const grpCol = r.ibmGrp==='CO'?'var(--blue60)':r.ibmGrp==='BF'?'var(--green60)':'var(--purple60)';
+      const splitFte = (r.currentPct / 100 * r.oldFte);
+      const isLast = ri === rows.length - 1;
+
+      const tr = document.createElement('tr');
+      tr.style.cssText = 'border-bottom:1px solid '+(isLast?'var(--c30)':'var(--c10)')+';background:'+fnBg;
+
+      // Old fn name cell — rowspan across all splits of this fn
+      const fnCell = ri === 0
+        ? '<td style="padding:8px 14px;font:700 11px var(--font);color:var(--c100);vertical-align:middle;border-right:2px solid var(--c20)" rowspan="'+rows.length+'">'+
+            H(oldName)+
+          '</td>'+
+          '<td style="padding:8px 10px;text-align:right;font:700 13px var(--mono);color:var(--c70);vertical-align:middle;border-right:1px solid var(--c10)" rowspan="'+rows.length+'">'+
+            r.oldFte.toFixed(1)+
+          '</td>'
+        : '';
+
+      // Editable % input — disabled if direct (1:1) mapping
+      const inputEl = r.isDirect
+        ? '<span style="font:700 12px var(--mono);color:var(--c50)">100%</span>'
+        : '<div style="display:flex;align-items:center;gap:3px">'+
+            '<input type="number" min="0" max="100" value="'+r.currentPct+'" '+
+              'data-key="'+r.key+'" '+
+              'class="split-pct-inp" '+
+              'style="width:54px;padding:3px 6px;border:1px solid var(--c20);border-radius:var(--r);font:700 12px var(--mono);text-align:right;background:var(--white)">'+
+            '<span style="font:600 11px var(--font);color:var(--c60)">%</span>'+
+          '</div>';
+
+      // Running total badge on last row of this fn
+      const totalBadge = isLast
+        ? '<td style="padding:8px 10px;text-align:center;vertical-align:middle">'+
+            '<span style="font:700 10px var(--mono);padding:2px 7px;border-radius:8px;background:'+(pctOk?'#dcfce7':'var(--red10)')+';color:'+(pctOk?'var(--green60)':'var(--red60)')+'">'+
+              totalPct+'%'+(pctOk?' ✓':' ⚠')+
+            '</span>'+
+          '</td>'
+        : '<td></td>';
+
+      tr.innerHTML = fnCell +
+        '<td style="padding:6px 10px;text-align:center;color:var(--blue40);font-size:13px">&#8594;</td>'+
+        '<td style="padding:8px 14px;font:600 11px var(--font);color:var(--blue70)">'+H(r.ibm)+
+          '<span style="margin-left:6px;font:700 8px var(--font);padding:1px 6px;border-radius:8px;background:'+grpCol+'22;color:'+grpCol+'">'+r.ibmGrp+'</span>'+
+        '</td>'+
+        '<td style="padding:6px 10px">'+inputEl+'</td>'+
+        '<td style="padding:8px 14px;text-align:right;font:700 12px var(--mono);color:var(--blue60)">'+splitFte.toFixed(1)+'</td>'+
+        totalBadge+
+        '<td style="padding:8px 12px;font:400 10px var(--font);color:var(--c50);font-style:italic">'+H(r.note)+'</td>';
+      vbody.appendChild(tr);
+    });
+  });
+
+  // Grand total footer
+  const ibmFtes = TAXONOMY_MAPPING.map(m => {
+    const tot = splitRows.filter(r=>r.ibm===m.new).reduce((s,r)=>s+(r.currentPct/100*r.oldFte),0);
+    return tot;
+  });
+  const grandIbmFte = ibmFtes.reduce((s,v)=>s+v,0);
+
+  const gtr = document.createElement('tr');
+  gtr.style.cssText = 'background:var(--c100)';
+  gtr.innerHTML =
+    '<td style="padding:9px 14px;color:var(--white);font:700 11px var(--font)">TOTAL — 16 Client Functions</td>'+
+    '<td style="padding:9px 10px;text-align:right;font:700 13px var(--mono);color:var(--yellow50)">'+totalClientFte.toFixed(1)+'</td>'+
+    '<td style="padding:9px 10px;text-align:center;color:var(--blue30);font-size:13px">&#8594;</td>'+
+    '<td style="padding:9px 14px;color:var(--white);font:700 11px var(--font)">10 IBM Finance Verticals</td>'+
+    '<td colspan="3" style="padding:9px 14px;color:var(--yellow50);font:700 13px var(--mono)">'+grandIbmFte.toFixed(1)+' FTE allocated</td>';
+  vbody.appendChild(gtr);
+
+  // Delegation: input changes → recompute IBM fn FTE → update CBM
+  const vb = document.getElementById('map-vertical-body');
+  if (vb) vb.oninput = e => {
+    const inp = e.target.closest('.split-pct-inp');
+    if (!inp) return;
+    const key = inp.dataset.key;
+    const val = Math.max(0, Math.min(100, parseInt(inp.value)||0));
+    inp.value = val;
+    if (!ST.splitShares) ST.splitShares = {};
+    ST.splitShares[key] = val;
+    recomputeIBMFtes();
+    renderMappingTab();    // refresh table (totals, FTE cols)
+    render();              // refresh CBM grid
+    renderSimulation();    // refresh simulation
+    persist();
+  };
+
+  // ── TABLE 2: Component register with editable client name + description ──
+  const fnFilter   = document.getElementById('map-fn-filter')?.value   || '';
+  const bandFilter = document.getElementById('map-band-filter')?.value || '';
+  const tbody = document.getElementById('map-comp-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+
+  const BAND_LABELS = {s:'Strategic', t:'Governance', o:'Operational'};
+  const BAND_CLS    = {s:'td-s', t:'td-t', o:'td-o'};
+
+  ST.fns.forEach(fn => {
+    if (fnFilter && fn.id !== fnFilter) return;
+    let firstInFn = true;
+    let fnRowCount = ['s','t','o'].filter(b=>!bandFilter||b===bandFilter)
+      .reduce((n,b)=>n+(fn.comps[b]||[]).length, 0);
+
+    ['s','t','o'].forEach(band => {
+      if (bandFilter && band !== bandFilter) return;
+      (fn.comps[band]||[]).forEach((comp, ci) => {
+        const storeKey = 'cmap_' + comp.id;
+        const saved      = ST.compMap ? ST.compMap[comp.id] : null;
+        const clientName = saved?.clientName || '';
+        // Description: use user-saved value if present, otherwise fall back to pre-written default
+        const desc = (saved && saved.desc !== undefined) ? saved.desc : (COMP_DESCRIPTIONS[comp.id] || '');
+
+        const bandLbl  = BAND_LABELS[band];
+        const bandCls  = BAND_CLS[band];
+        const bandColour = band==='s'?'var(--s-col)':band==='t'?'var(--t-col)':'var(--o-col)';
+        const bandBg     = band==='s'?'var(--s-lbl)':band==='t'?'var(--t-lbl)':'var(--o-lbl)';
+
+        const tr = document.createElement('tr');
+        tr.style.borderBottom = '1px solid var(--c10)';
+
+        // Function cell — only on first row of this fn×band group
+        const fnCellHTML = firstInFn
+          ? '<td style="padding:7px 14px;font:700 11px var(--font);color:var(--c100);vertical-align:top;border-right:2px solid var(--c20);background:var(--c10)" rowspan="'+fnRowCount+'">'+
+              H(fn.name)+
+            '</td>'
+          : '';
+        firstInFn = false;
+
+        tr.innerHTML = fnCellHTML +
+          '<td style="padding:5px 10px;text-align:center">'+
+            '<span style="font:700 9px var(--font);padding:2px 8px;border-radius:8px;background:'+bandBg+';color:'+bandColour+'">'+bandLbl+'</span>'+
+          '</td>'+
+          '<td style="padding:7px 14px;font:500 11px var(--font);color:var(--c90)">'+H(comp.name)+'</td>'+
+          '<td style="padding:5px 8px">'+
+            '<input class="finp map-cname-inp" type="text" placeholder="Client taxonomy name&#8230;" value="'+H(clientName)+'" '+
+              'data-cid="'+comp.id+'" data-field="clientName" '+
+              'style="font-size:11px;padding:5px 9px;border-color:var(--blue30);background:#f0f7ff">'+
+          '</td>'+
+          '<td style="padding:5px 8px">'+
+            '<input class="finp map-cdesc-inp" type="text" placeholder="Add description&#8230;" value="'+H(desc)+'" '+
+              'data-cid="'+comp.id+'" data-field="desc" '+
+              'style="font-size:11px;padding:5px 9px">'+
+          '</td>';
+        tbody.appendChild(tr);
+      });
+    });
+  });
+
+  // Update statusbar
+  const sb = document.getElementById('map-sb');
+  if (sb) sb.textContent = 'Taxonomy Mapping  |  10 verticals  ·  108 components  ·  CO / BF / GSS groupings';
+
+  // Delegated input handler for client name + description fields
+  const compBody = document.getElementById('map-comp-body');
+  if (compBody) {
+    compBody.oninput = e => {
+      const inp = e.target.closest('.map-cname-inp, .map-cdesc-inp');
+      if (inp) saveCompMap(inp.dataset.cid, inp.dataset.field, inp.value);
+    };
+  }
+}
+
+function saveCompMap(compId, field, value) {
+  if (!ST.compMap) ST.compMap = {};
+  if (!ST.compMap[compId]) ST.compMap[compId] = {};
+  ST.compMap[compId][field] = value;
+  persist();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// BOOT & PERSIST
+// ══════════════════════════════════════════════════════════════════
+function boot() {
+  const saved = (() => { try { const v=localStorage.getItem('cbm8'); return v?JSON.parse(v):null; } catch(e){return null;} })();
+  ST.fns = saved ? saved : JSON.parse(JSON.stringify(SEED));
+  applyCompUCMap();
+  initCompSave();
+  render();
+}
+
+function applyCompUCMap() {
+  ST.fns.forEach(fn => {
+    ['s','t','o'].forEach(band => {
+      (fn.comps[band] || []).forEach(comp => {
+        // Only set if no manual links already saved
+        if (!comp.uc_links || comp.uc_links.length === 0) {
+          comp.uc_links = COMP_UC_MAP[comp.id] || [];
+        }
+      });
+    });
+  });
+}
+function persist() { try { localStorage.setItem('cbm8', JSON.stringify(ST.fns)); } catch(e){} }
+
+// ══════════════════════════════════════════════════════════════════
+// TAB SWITCHING
+// ══════════════════════════════════════════════════════════════════
+function switchTab(tab) {
+  ['cbm','map'].forEach(t => {
+    const panel = document.getElementById('panel-'+t);
+    if (panel) { panel.style.display = t===tab ? 'flex' : 'none'; panel.style.flexDirection = 'column'; }
+    const btn = document.getElementById('tab-'+t);
+    if (btn) btn.classList.toggle('active', t===tab);
+    const tb = document.getElementById('tb-'+t);
+    if (tb) tb.style.display = t===tab ? 'flex' : 'none';
+  });
+  if (tab==='map') renderMappingTab();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CBM RENDER
+// ══════════════════════════════════════════════════════════════════
+const BANDS = [
+  {id:'s',label:'Strategic',   desc:'Direction &middot; Policy &middot; Planning',          cls:'s'},
+  {id:'t',label:'Governance',  desc:'Oversight &middot; Monitoring &middot; Controls',      cls:'t'},
+  {id:'o',label:'Operational', desc:'Execution &middot; Processing &middot; Transactions',  cls:'o'}
+];
+
+function render() {
+  const grid = document.getElementById('cbm-grid');
+  grid.innerHTML = '';
+  const vis = ST.fns.filter(f => ST.grpF==='all' || f.grp===ST.grpF);
+  const ncols = vis.length + 2;
+  grid.style.gridTemplateColumns = '42px repeat('+vis.length+',minmax(150px,1fr)) 80px';
+
+  const corner = el('div','corner'); corner.innerHTML = '<span class="corner-lbl">Functions &rarr;</span>'; grid.appendChild(corner);
+  vis.forEach(fn => grid.appendChild(makeFnHdr(fn)));
+  const addH = el('div','fn-hdr-add'); addH.innerHTML = '<button class="btn btn-primary btn-xs" onclick="openFnModal(null)">+ Add</button>'; grid.appendChild(addH);
+
+  BANDS.forEach(band => {
+    grid.appendChild(makeBandLbl(band));
+    vis.forEach(fn => grid.appendChild(makeCell(fn, band.id, band.cls)));
+    const ec = el('div','add-fn-cell'); grid.appendChild(ec);
+  });
+
+  updateCBMStatus();
+  renderSimulation();
+  persist();
+  // Delegated clicks on CBM grid (UC links + comp edit/del)
+  document.getElementById('cbm-grid').onclick = e => {
+    // UC link rows
+    const row = e.target.closest('.cul-row');
+    if (row && row.dataset.goto) { e.stopPropagation(); jumpToUC(row.dataset.goto); return; }
+    // Component edit/del buttons
+    const cbtn = e.target.closest('.ca');
+    if (cbtn) {
+      const acts = cbtn.closest('.comp-actions');
+      if (!acts) return;
+      const {fid, band, cid} = acts.dataset;
+      if (cbtn.dataset.action === 'edit') openCompModal(fid, band, cid);
+      if (cbtn.dataset.action === 'del')  delComp(fid, band, cid);
+      return;
+    }
+    // Function header name click → edit
+    const fnName = e.target.closest('.fn-hdr-name');
+    if (fnName && fnName.dataset.fnid) { openFnModal(fnName.dataset.fnid); return; }
+    // Function action buttons
+    const fbtn = e.target.closest('.fn-actions .btn');
+    if (fbtn) {
+      const acts = fbtn.closest('.fn-actions');
+      if (!acts) return;
+      if (fbtn.dataset.action === 'edit') openFnModal(acts.dataset.fnid);
+      if (fbtn.dataset.action === 'del')  delFn(acts.dataset.fnid);
+    }
+  };
+}
+
+function makeFnHdr(fn) {
+  const bc = fn.grp==='CO'?'bco':fn.grp==='BF'?'bbf':'bgss';
+  const bt = fn.grp==='CO'?'CO':fn.grp==='BF'?'BF':'GSS';
+  const sw=fn.s||0, tw=fn.t||0, ow=fn.o||(100-sw-tw);
+  const d = el('div','fn-hdr');
+
+  // Component budget indicator
+  const allComps = ['s','t','o'].flatMap(b => fn.comps[b]||[]);
+  const compTotal = allComps.reduce((s,c) => s + c.pct, 0);
+  const budgetCls = compTotal===100 ? 'bgt-ok' : compTotal>100 ? 'bgt-over' : 'bgt-under';
+  const budgetTxt = compTotal===100 ? '&#10003; 100%' : compTotal>100 ? '&#9888; '+compTotal+'%' : '&#9702; '+compTotal+'%';
+
+  d.innerHTML =
+    '<div class="fn-hdr-name" data-fnid="'+fn.id+'" title="Edit &#9999;">'+H(fn.name)+'</div>'+
+    '<div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:3px">'+
+      '<div><div class="fn-hdr-fte">'+fmt(fn.fte)+'</div><div class="fn-hdr-lbl">Total FTE</div></div>'+
+      '<span class="fn-bgt-pill '+budgetCls+'">'+budgetTxt+'</span>'+
+    '</div>'+
+    '<span class="fn-badge '+bc+'">'+bt+'</span>'+
+    '<div class="fn-bar"><div class="bar-s" style="flex:'+sw+'"></div><div class="bar-t" style="flex:'+tw+'"></div><div class="bar-o" style="flex:'+ow+'"></div></div>'+
+    '<div class="fn-pcts"><span class="fn-pct s">'+sw.toFixed(0)+'%S</span><span class="fn-pct t">'+tw.toFixed(0)+'%G</span><span class="fn-pct o">'+ow.toFixed(0)+'%O</span></div>'+
+    '<div class="fn-actions" data-fnid="'+fn.id+'">'+
+      '<button class="btn btn-ghost btn-xs" data-action="edit">&#9999; Edit</button>'+
+      '<button class="btn btn-danger btn-xs" data-action="del">&#128465;</button>'+
+    '</div>';
+  return d;
+}
+function makeBandLbl(band) {
+  const d = el('div','band-lbl '+band.cls);
+  d.innerHTML = '<div class="band-txt">'+band.label+'</div><div class="band-desc">'+band.desc+'</div>';
+  return d;
+}
+
+function makeCell(fn, band, bc) {
+  const d = el('div','cbm-cell '+bc);
+  (fn.comps[band]||[]).forEach(c => d.appendChild(makeCard(fn.id, band, c)));
+  const ab = el('button','add-comp-btn');
+  ab.innerHTML = '+ Add Component'; ab.onclick = () => openCompModal(fn.id, band, null);
+  d.appendChild(ab);
+  return d;
+}
+
+function makeCard(fid, band, c) {
+  const show = ST.aiF==='all' || ST.aiF===c.ai;
+  const d = el('div','comp '+c.ai+(show?'':' dim'));
+
+  // Build linked UC rows - show id + name + score
+  const ucLinks = (c.uc_links||[]);
+  let linksHTML = '';
+  if (ucLinks.length > 0) {
+    const items = ucLinks.map(ucid => {
+      const ur = ST.uc.find(u => u.uc===ucid);
+      if (!ur) return '';
+      const lvl = getAILvl(ur);
+      const shortName = ur.name.length>30 ? ur.name.substring(0,30)+'…' : ur.name;
+      const action = getAction(ur.weighted);
+      const actDot = action==='Deploy Now'?'#16a34a':action==='Next Wave'?'#ca8a04':'#9ca3af';
+      return '<div class="cul-row" data-goto="'+ucid+'" title="'+H(ur.name)+'">'+
+        '<span class="cul-id '+lvl+'">'+ucid+'</span>'+
+        '<span class="cul-name">'+H(shortName)+'</span>'+
+        '<span class="cul-score" style="color:'+actDot+'">'+ur.weighted.toFixed(0)+'</span>'+
+      '</div>';
+    }).filter(Boolean).join('');
+    if (items) {
+      linksHTML = '<div class="cul-wrap">'+
+        '<div class="cul-hdr">AI Use Cases</div>'+
+        items+
+      '</div>';
+    }
+  }
+
+  // Compute actual component FTE from function total
+  const fn = ST.fns.find(f => f.id===fid);
+  const fnFte = fn ? Number(fn.fte)||0 : 0;
+  const compFte = fnFte * (c.pct/100);
+  const compFteStr = compFte % 1 === 0 ? compFte.toFixed(0) : compFte.toFixed(1);
+
+  // Saving % from simulation state
+  const savePct = getCompSavePct(c.id);
+  const saveFte = compFte * savePct / 100;
+  const saveFteStr = saveFte < 0.1 ? '—' : (saveFte % 1 === 0 ? saveFte.toFixed(0) : saveFte.toFixed(1));
+
+  d.innerHTML =
+    '<div class="comp-top"><div class="comp-dot"></div><div class="comp-name">'+H(c.name)+'</div></div>'+
+    '<div class="comp-foot">'+
+      '<div class="comp-fte-block">'+
+        '<div class="comp-fte-row">'+
+          '<span class="comp-pct">'+c.pct+'%</span>'+
+          '<span class="comp-fte-sep">=</span>'+
+          '<span class="comp-fte-val">'+compFteStr+'</span>'+
+          '<span class="comp-pct-lbl">FTE</span>'+
+        '</div>'+
+        '<div class="comp-save-row">'+
+          '<span class="comp-save-lbl">AI saving:</span>'+
+          '<span class="comp-save-val">'+saveFteStr+(saveFte>=0.1?' FTE':' ')+'</span>'+
+          '<span class="comp-save-pct">('+savePct+'%)</span>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    linksHTML+
+    '<div class="comp-actions" data-fid="'+fid+'" data-band="'+band+'" data-cid="'+c.id+'">'+
+      '<button class="ca ca-e" data-action="edit">&#9999;</button>'+
+      '<button class="ca ca-d" data-action="del">&#128465;</button>'+
+    '</div>';
+
+  d.addEventListener('mouseenter', e => showTT(e, c));
+  d.addEventListener('mousemove', moveTT);
+  d.addEventListener('mouseleave', hideTT);
+  return d;
+}
+
+function updateCBMStatus() {
+  let ft=0, nc=0, nh=0, nm=0, nl=0;
+  ST.fns.forEach(f => { ft+=Number(f.fte)||0; ['s','t','o'].forEach(b=>(f.comps[b]||[]).forEach(c=>{nc++;if(c.ai==='h')nh++;else if(c.ai==='m')nm++;else nl++;})); });
+  document.getElementById('cbm-sb').innerHTML =
+    '<span class="sb-s"><strong>'+ST.fns.length+'</strong> Functions</span>'+
+    '<span class="sb-s"><strong>'+fmt(ft)+'</strong> FTE</span>'+
+    '<span class="sb-s"><strong>'+nc+'</strong> Components</span>'+
+    '<span class="sb-s h">&#9679; <strong>'+nh+'</strong> High AI</span>'+
+    '<span class="sb-s m">&#9679; <strong>'+nm+'</strong> Medium</span>'+
+    '<span class="sb-s" style="color:var(--c60)">&#9679; <strong>'+nl+'</strong> Low</span>';
+}
+
+// ══════════════════════════════════════════════════════════════════
+// CBM FILTERS
+// ══════════════════════════════════════════════════════════════════
+function setAIF(v) {
+  ST.aiF=v;
+  ['all','h','m','l'].forEach(x=>{const e=document.getElementById('f-'+x);if(e){e.className='chip';if(x===v)e.className+=(v==='all'?' on-all':' on-'+v);}});
+  render();
+}
+function setGrpF(v) {
+  ST.grpF=v;
+  ['all','CO','BF','GSS'].forEach(x=>{const e=document.getElementById('g-'+x);if(e)e.className='chip'+(x===v?' on-grp':'');});
+  render();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// COMPONENT MODAL
+// ══════════════════════════════════════════════════════════════════
+let _cm = {};
+function openCompModal(fid, band, cid) {
+  _cm = {fid, band, cid};
+  const fn = ST.fns.find(f=>f.id===fid);
+  const comp = cid ? (fn.comps[band]||[]).find(c=>c.id===cid) : null;
+  document.getElementById('cm-title').textContent = comp ? 'Edit Component' : 'Add Component';
+  document.getElementById('cm-fid').value = fid;
+  document.getElementById('cm-band').value = band;
+  document.getElementById('cm-cid').value = cid||'';
+  document.getElementById('cm-name').value = comp ? comp.name : '';
+  document.getElementById('cm-pct').value  = comp ? comp.pct  : '';
+  document.getElementById('cm-uc').value   = comp ? (comp.uc_desc||'') : '';
+  selAI(comp ? comp.ai : 'h');
+  updPctHint();
+  buildLinkPicker(comp ? (comp.uc_links||[]) : []);
+  document.getElementById('cm-val').style.display='none';
+  openModal('cm-ov');
+  setTimeout(()=>document.getElementById('cm-name').focus(), 50);
+}
+
+function buildLinkPicker(selected) {
+  // ── A. Render "currently linked" cards ──
+  renderLinkedCards(selected);
+
+  // ── B. Render full picker (all 178 UCs grouped by domain) ──
+  const container = document.getElementById('cm-links');
+  container.innerHTML = '';
+  const byDomain = {};
+  ST.uc.forEach(r => { if (!byDomain[r.domain]) byDomain[r.domain]=[]; byDomain[r.domain].push(r); });
+  Object.keys(byDomain).sort().forEach(domain => {
+    const hdr = el('div','link-picker-item section-hdr'); hdr.textContent = domain; container.appendChild(hdr);
+    byDomain[domain].forEach(r => {
+      const row = el('label','link-picker-item');
+      const cb = document.createElement('input');
+      cb.type='checkbox'; cb.value=r.uc; cb.checked=selected.includes(r.uc);
+      // Live-update linked cards on checkbox change
+      cb.addEventListener('change', () => {
+        const currentChecked = getSelectedLinks();
+        renderLinkedCards(currentChecked);
+      });
+      const lvl = getAILvl(r);
+      const action = getAction(r.weighted);
+      const actDot = action==='Deploy Now'?'#16a34a':action==='Next Wave'?'#ca8a04':'#9ca3af';
+      row.appendChild(cb);
+      const span = document.createElement('span');
+      span.innerHTML =
+        '<span class="uc-badge '+lvl+'" style="font-size:8px;padding:1px 5px">'+r.uc+'</span> '+
+        H(r.name)+
+        ' <span style="color:var(--c50);font-size:9px">'+H(r.subproc)+'</span>'+
+        ' <span style="color:'+actDot+';font-size:9px;font-weight:700">&#9679;</span>';
+      row.appendChild(span);
+      container.appendChild(row);
+    });
+  });
+}
+
+function renderLinkedCards(selected) {
+  const cardsEl = document.getElementById('cm-linked-cards');
+  const countEl = document.getElementById('cm-linked-count');
+  if (!cardsEl) return;
+
+  if (!selected.length) {
+    cardsEl.innerHTML =
+      '<div style="color:var(--c50);font-size:11px;font-style:italic;padding:8px 10px;background:var(--c10);border-radius:var(--r);border:1px dashed var(--c30)">'+
+      'No use cases linked yet. Check boxes in the picker below to link use cases to this component.</div>';
+    if (countEl) countEl.textContent = '';
+    return;
+  }
+
+  if (countEl) countEl.textContent = ' — '+selected.length+' linked';
+
+  cardsEl.innerHTML = '';
+  selected.forEach(ucid => {
+    const r = ST.uc.find(u => u.uc===ucid);
+    if (!r) return;
+    const ai  = getAILvl(r);
+    const ws  = r.weighted;
+    const action = getAction(ws);
+    const actCls = action==='Deploy Now'?'act-now':action==='Next Wave'?'act-next':'act-later';
+
+    const card = document.createElement('div');
+    card.className = 'linked-uc-card '+ai;
+    card.innerHTML =
+      '<div class="luc-top">'+
+        '<div class="luc-left">'+
+          '<div class="luc-badges">'+
+            '<span class="uc-badge '+ai+'">'+H(r.uc)+'</span>'+
+            '<span class="uc-action-tag '+actCls+'" style="font-size:8px;padding:1px 6px">'+action+'</span>'+
+          '</div>'+
+          '<div class="luc-name">'+H(r.name)+'</div>'+
+          '<div class="luc-sub">'+H(r.domain)+' &middot; '+H(r.subproc)+'</div>'+
+        '</div>'+
+        '<div class="luc-right">'+
+          '<div class="luc-score '+ai+'">'+ws.toFixed(1)+'</div>'+
+          '<div class="luc-score-lbl">Score</div>'+
+        '</div>'+
+      '</div>'+
+      '<div class="luc-metrics">'+
+        '<div class="luc-metric"><span class="luc-mk">FTE Saves</span><span class="luc-mv '+ai+'">'+H(r.fte||'—')+'</span></div>'+
+        '<div class="luc-metric"><span class="luc-mk">$ Saves</span><span class="luc-mv '+ai+'">'+H(r.savings||'—')+'</span></div>'+
+        '<div class="luc-metric"><span class="luc-mk">Effort Reduction</span><span class="luc-mv">'+H(r.effort||'—')+'</span></div>'+
+        '<div class="luc-metric"><span class="luc-mk">Complexity</span><span class="luc-mv">'+H(r.complexity||'—')+'</span></div>'+
+      '</div>'+
+      '<div class="luc-desc">'+H((r.desc||'').substring(0,160))+(r.desc&&r.desc.length>160?'…':'')+'</div>';
+    cardsEl.appendChild(card);
+  });
+}
+
+function getSelectedLinks() {
+  return [...document.querySelectorAll('#cm-links input[type=checkbox]:checked')].map(cb=>cb.value);
+}
+
+function updPctHint() {
+  const fid=document.getElementById('cm-fid').value, cid=document.getElementById('cm-cid').value;
+  if (!fid) return;
+  const fn=ST.fns.find(f=>f.id===fid); if (!fn) return;
+  const allC=['s','t','o'].flatMap(b=>fn.comps[b]||[]);
+  const othersTotal = allC.filter(c=>c.id!==cid).reduce((s,c)=>s+c.pct,0);
+  const cur = parseInt(document.getElementById('cm-pct').value)||0;
+  const total = othersTotal + cur;
+  const bar = document.getElementById('pct-bar');
+  bar.style.width = Math.min(100, total)+'%';
+  bar.style.background = total>100 ? 'var(--red60)' : total===100 ? 'var(--green50)' : 'var(--yellow50)';
+  const status = total===100 ? '✓ Exactly 100% — perfect' : total>100 ? '⚠ Over-allocated by '+(total-100)+'%' : '⚠ Under-allocated — '+( 100-total)+'% unassigned';
+  const statusColor = total===100 ? 'var(--green60)' : total>100 ? 'var(--red60)' : '#92400e';
+  document.getElementById('cm-hint').innerHTML =
+    'Other components: <strong>'+othersTotal+'%</strong> &nbsp;|&nbsp; This component: <strong>'+cur+'%</strong> &nbsp;|&nbsp; Function total: <strong>'+total+'%</strong><br>'+
+    '<span style="color:'+statusColor+';font-weight:600">'+status+'</span>';
+}
+function selAI(v) {
+  ST.selAI=v;
+  ['h','m','l'].forEach(x=>{const e=document.getElementById('ao-'+x);if(e)e.className='ai-opt'+(x===v?' sel-'+x:'');});
+}
+function saveComp() {
+  const name=document.getElementById('cm-name').value.trim();
+  const pct=parseInt(document.getElementById('cm-pct').value);
+  const uc_desc=document.getElementById('cm-uc').value.trim();
+  const uc_links=getSelectedLinks();
+  const {fid,band,cid}=_cm;
+  const vm=document.getElementById('cm-val');
+  if (!name){showVM(vm,'err','Name required.');return;}
+  if (isNaN(pct)||pct<1){showVM(vm,'err','FTE % must be at least 1.');return;}
+  const fn=ST.fns.find(f=>f.id===fid);
+  const allC=['s','t','o'].flatMap(b=>fn.comps[b]||[]);
+  const othersTotal=allC.filter(c=>c.id!==cid).reduce((s,c)=>s+c.pct,0);
+  const total=othersTotal+pct;
+  // Soft warning — save is allowed but flag shown
+  if (total!==100){
+    const msg = total>100
+      ? '⚠ Saved — function total is '+total+'% (over by '+(total-100)+'%). Adjust other components to reach 100%.'
+      : '⚠ Saved — function total is '+total+'% ('+( 100-total)+'% unassigned). Add more components or increase % to reach 100%.';
+    showVM(vm,'ok',msg);
+  }
+  if (!fn.comps[band]) fn.comps[band]=[];
+  const obj={id:cid||'c'+Date.now(), name, pct, ai:ST.selAI, uc_desc, uc_links};
+  if (cid){const idx=fn.comps[band].findIndex(c=>c.id===cid);fn.comps[band][idx]=obj;}
+  else{fn.comps[band].push(obj);}
+  render(); // always re-render
+  if (total===100) closeModal('cm-ov'); // only close if balanced
+  // else keep modal open so user sees the warning and can adjust
+}
+function delComp(fid,band,cid) {
+  if (!confirm('Delete this component?')) return;
+  const fn=ST.fns.find(f=>f.id===fid);
+  if (fn) fn.comps[band]=(fn.comps[band]||[]).filter(c=>c.id!==cid);
+  render();
+}
+
+// ══════════════════════════════════════════════════════════════════
+// FUNCTION MODAL
+// ══════════════════════════════════════════════════════════════════
+function syncO(){const s=parseFloat(document.getElementById('fm-s').value)||0,t=parseFloat(document.getElementById('fm-t').value)||0;document.getElementById('fm-o').value=Math.max(0,100-s-t).toFixed(1);}
+function openFnModal(fid) {
+  const fn=fid?ST.fns.find(f=>f.id===fid):null;
+  document.getElementById('fm-fid').value=fid||'';
+  document.getElementById('fm-title').textContent=fn?'Edit Function':'Add Finance Function';
+  document.getElementById('fm-name').value=fn?fn.name:'';
+  document.getElementById('fm-fte').value=fn?fn.fte:'';
+  document.getElementById('fm-grp').value=fn?fn.grp:'CO';
+  document.getElementById('fm-s').value=fn?fn.s.toFixed(1):'';
+  document.getElementById('fm-t').value=fn?fn.t.toFixed(1):'';
+  document.getElementById('fm-o').value=fn?(fn.o||(100-fn.s-fn.t)).toFixed(1):'';
+  document.getElementById('fm-val').style.display='none';
+  openModal('fm-ov');
+  setTimeout(()=>document.getElementById('fm-name').focus(),50);
+}
+function saveFn() {
+  const name=document.getElementById('fm-name').value.trim();
+  const fte=parseFloat(document.getElementById('fm-fte').value);
+  const grp=document.getElementById('fm-grp').value;
+  const s=parseFloat(document.getElementById('fm-s').value)||0;
+  const t=parseFloat(document.getElementById('fm-t').value)||0;
+  const o=Math.max(0,100-s-t);
+  const fid=document.getElementById('fm-fid').value;
+  const vm=document.getElementById('fm-val');
+  if (!name){showVM(vm,'err','Name required.');return;}
+  if (isNaN(fte)||fte<=0){showVM(vm,'err','Valid FTE required.');return;}
+  if (s+t>100){showVM(vm,'err','S+G cannot exceed 100%.');return;}
+  if (fid){Object.assign(ST.fns.find(f=>f.id===fid),{name,fte,grp,s,t,o});}
+  else{ST.fns.push({id:'fn'+Date.now(),name,fte,grp,s,t,o,comps:{s:[],t:[],o:[]}});}
+  closeModal('fm-ov'); render();
+}
+function delFn(fid){if(!confirm('Delete function and all components?'))return;ST.fns=ST.fns.filter(f=>f.id!==fid);render();}
+
+// ══════════════════════════════════════════════════════════════════
+// UC LIBRARY
+// ══════════════════════════════════════════════════════════════════
+let _ucInited = false;
+
+// Build index: fnId -> {name, comps: [{id,name,band,ucLinks:[]}]}
+function buildCBMIndex() {
+  const idx = {};
+  ST.fns.forEach(fn => {
+    idx[fn.id] = { name: fn.name, comps: [] };
+    ['s','t','o'].forEach(band => {
+      (fn.comps[band]||[]).forEach(c => {
+        idx[fn.id].comps.push({ id: c.id, name: c.name, band, ucLinks: c.uc_links||[] });
+      });
+    });
+  });
+  return idx;
+}
+
+// Which UC ids are linked to a given fn (all its comps) or comp
+function ucIdsForFn(fnId, cbmIdx) {
+  if (!cbmIdx[fnId]) return new Set();
+  const ids = new Set();
+  cbmIdx[fnId].comps.forEach(c => c.ucLinks.forEach(uid => ids.add(uid)));
+  return ids;
+}
+function ucIdsForComp(compId, cbmIdx) {
+  for (const fnId in cbmIdx) {
+    const c = cbmIdx[fnId].comps.find(c => c.id === compId);
+    if (c) return new Set(c.ucLinks);
+  }
+  return new Set();
+}
+
+function scoreDimRow(key, label, r) {
+  const def = SCORE_DEFS[key];
+  const score = r[key]||0;
+  const txt   = r[key+'_txt']||'';
+  const pct   = (score/5)*100;
+  return '<div class="udg-dim-row">'+
+    '<div class="udg-dim-lbl">'+label+'</div>'+
+    '<div class="udg-dim-bar-wrap">'+
+      '<div class="udg-dim-bar" style="width:'+pct+'%;background:'+def.col+'"></div>'+
+    '</div>'+
+    '<div class="udg-dim-score" style="color:'+def.col+'">'+score+'/5</div>'+
+    '<div class="udg-dim-txt">'+H(txt)+'</div>'+
+  '</div>';
+}
+function openModal(id){document.getElementById(id).classList.add('on');}
+function closeModal(id){document.getElementById(id).classList.remove('on');}
+function showVM(el,type,msg){el.className='valmsg '+type;el.textContent=msg;el.style.display='block';}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('on');}));
+
+// ══════════════════════════════════════════════════════════════════
+// EXPORT / IMPORT
+// ══════════════════════════════════════════════════════════════════
+function doExport(){
+  const blob=new Blob([JSON.stringify({fns:ST.fns,uc_scores:ST.uc.map(r=>({uc:r.uc,v:r.v,f:r.f,s:r.s,d:r.d,sp:r.sp,r:r.r})),weights:ST.weights},null,2)],{type:'application/json'});
+  const a=Object.assign(document.createElement('a'),{href:URL.createObjectURL(blob),download:'finance_cbm.json'});
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(a.href);
+}
+function doImport(){document.getElementById('imp-file').click();}
+function handleImport(e){
+  const f=e.target.files[0];if(!f)return;
+  const reader=new FileReader();
+  reader.onload=ev=>{
+    try{
+      const d=JSON.parse(ev.target.result);
+      if(d.fns){ST.fns=d.fns;}
+      if(d.weights){Object.assign(ST.weights,d.weights);initWeightUI();}
+      if(d.uc_scores){d.uc_scores.forEach(us=>{const r=ST.uc.find(u=>u.uc===us.uc);if(r)Object.assign(r,{v:us.v,f:us.f,s:us.s,d:us.d,sp:us.sp,r:us.r,weighted:calcWeighted(Object.assign({},r,us))});});}
+      render();
+    }catch(err){alert('Invalid file: '+err.message);}
+  };
+  reader.readAsText(f);e.target.value='';
+}
+
+// ══════════════════════════════════════════════════════════════════
+// TOOLTIP
+// ══════════════════════════════════════════════════════════════════
+function showTT(e,c){
+  const lbl=c.ai==='h'?'High AI':c.ai==='m'?'Medium AI':'Low AI';
+  const tt=document.getElementById('tt');
+  const ucNames=(c.uc_links||[]).map(uid=>{const u=ST.uc.find(r=>r.uc===uid);return u?uid+': '+u.name:'';}).filter(Boolean).join(', ');
+  tt.className='tt on';
+  tt.innerHTML='<div class="tt-title">'+H(c.name)+'</div>'+
+    '<div class="tt-row"><span class="tt-k">FTE share</span><span class="tt-v">'+c.pct+'% of function</span></div>'+
+    (ucNames?'<div class="tt-row"><span class="tt-k">Linked UCs</span><span class="tt-v" style="font-size:9px">'+H(ucNames.substring(0,80))+'</span></div>':'')+
+    '<div class="tt-desc">'+H(c.uc_desc||'No description added.')+'</div>'+
+    '<span class="tt-badge tt-'+c.ai+'">'+lbl+'</span>';
+  moveTT(e);
+}
+function moveTT(e){
+  const tt=document.getElementById('tt');if(!tt.classList.contains('on'))return;
+  let x=e.clientX+16,y=e.clientY+16;
+  if(x+tt.offsetWidth>window.innerWidth)x=e.clientX-tt.offsetWidth-10;
+  if(y+tt.offsetHeight>window.innerHeight)y=e.clientY-tt.offsetHeight-10;
+  tt.style.left=x+'px';tt.style.top=y+'px';
+}
+function hideTT(){document.getElementById('tt').classList.remove('on');}
+
+// ══════════════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════════════
+function el(tag,cls){const e=document.createElement(tag);if(cls)e.className=cls;return e;}
+function H(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function fmt(v){const n=Number(v);return isNaN(n)?v:(n%1===0?n.toLocaleString():n.toFixed(1));}
+
+// START
+boot();
+</script>
+</body>
+</html>
